@@ -17,50 +17,68 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.esanchez.microservice.application.dto.CarDTO;
+import com.esanchez.microservice.application.dto.ResponseDTO;
+import com.esanchez.microservice.application.dto.mapping.CarMapping;
+import com.esanchez.microservice.application.exceptions.ApiException;
+import com.esanchez.microservice.application.services.CarService;
+import com.esanchez.microservice.domain.model.CarEntity;
 
 
 @RestController
-@RequestMapping("/v1/api")
-public class ApiController {
+@RequestMapping("/v1/api/cars")
+public class CarController {
 
-	private static final Logger logger = LogManager.getLogger(ApiController.class);
+	private static final Logger logger = LogManager.getLogger(CarController.class);
 	
-	@PostMapping("/cars")
-	public ResponseEntity<CarDTO> create(@RequestBody CarDTO car) {
-		logger.info("Request create car: {}", car);
-		
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+	private final CarService carService;
+	
+	public CarController(CarService carService) {
+		this.carService = carService;
 	}
 	
-	@GetMapping("/cars")
+	@PostMapping
+	public ResponseEntity<ResponseDTO> create(@RequestBody CarDTO car) {
+		logger.info("Request create car: {}", car);
+		
+		try {
+			CarEntity savedCar = carService.saveEntity(null);
+			
+			return ResponseEntity.status(HttpStatus.CREATED).body(CarMapping.parseToDto(savedCar));
+		} catch (ApiException e) {
+			logger.error("Error saving entity in database. {}", e.getMessage());
+			return ResponseEntity.status(e.getErrorCode()).body(new ResponseDTO(e.getErrorCode(), e.getMessage()));
+		}
+	}
+	
+	@GetMapping
 	public ResponseEntity<List<CarDTO>> readAll() {
 		logger.info("Request read all cars");
 		
 		return ResponseEntity.ok().build();
 	}
 	
-	@GetMapping("/cars/{id}")
+	@GetMapping("/{id}")
 	public ResponseEntity<CarDTO> read(@PathVariable Long id) {
 		logger.info("Request read car with id {}", id);
 		
 		return ResponseEntity.ok().build();
 	}
 	
-	@PutMapping("/cars/{id}")
+	@PutMapping("/{id}")
 	public ResponseEntity<CarDTO> update(@PathVariable Long id, @RequestBody CarDTO car) {
 		logger.info("Request update car. id: {}, car: {}", id, car);
 		
 		return ResponseEntity.ok().build();
 	}
 
-	@PatchMapping("/cars/{id}")
+	@PatchMapping("/{id}")
 	public ResponseEntity<CarDTO> partialUpdate(@PathVariable Long id, @RequestBody CarDTO car) {
 		logger.info("Request partial update car. id: {}, car: {}", id, car);
 		
 		return ResponseEntity.ok().build();
 	}
 	
-	@DeleteMapping("/cars/{id}")
+	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
 		logger.info("Request delete car. id: {}", id);
 		

@@ -1,4 +1,4 @@
-package com.hpe.intam.vp.automation;
+package com.esanchez.microservice.controllers;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
