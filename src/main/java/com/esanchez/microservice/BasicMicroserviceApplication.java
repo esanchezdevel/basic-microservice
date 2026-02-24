@@ -1,4 +1,4 @@
-package com.hpe.intam.vp.automation;
+package com.esanchez.microservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
