@@ -10,6 +10,10 @@ public class CarDTO extends ResponseDTO {
 	
 	private String license;
 
+	public CarDTO() {
+		super();
+	}
+	
 	public String getBrand() {
 		return brand;
 	}

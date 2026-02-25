@@ -10,26 +10,28 @@ import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.esanchez.microservice.application.dto.CarDTO;
+import com.esanchez.microservice.application.dto.ResponseDTO;
+import com.esanchez.microservice.application.dto.mapping.CarMapping;
 import com.esanchez.microservice.application.exceptions.ApiException;
 import com.esanchez.microservice.application.services.CarService;
 import com.esanchez.microservice.domain.model.BrandEntity;
 import com.esanchez.microservice.domain.model.CarEntity;
 
-@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 public class CarControllerTest {
 
-	@Mock
-	private CarService carServiceMock;
+	@Mock private CarService carServiceMock;
+	@Mock private CarMapping carMappingMock;
 	
-	private CarController carController = new CarController(carServiceMock);
+	@InjectMocks
+	private CarController carController;
 	
 	/**
 	 * Tests POST create car
@@ -42,12 +44,12 @@ public class CarControllerTest {
 		brandEntity.setId(1L);
 		brandEntity.setName("test-brand");
 		
-		CarEntity savedCarEntity = new CarEntity();
-		savedCarEntity.setId(1L);
-		savedCarEntity.setBrand(brandEntity);
-		savedCarEntity.setModel("test-model");
-		savedCarEntity.setOwner("test-owner");
-		savedCarEntity.setLicense("1111-T");
+		CarEntity carEntity = new CarEntity();
+		carEntity.setId(1L);
+		carEntity.setBrand(brandEntity);
+		carEntity.setModel("test-model");
+		carEntity.setOwner("test-owner");
+		carEntity.setLicense("1111-T");
 		
 		CarDTO carDTO = new CarDTO();
 		carDTO.setBrand("test-brand");
@@ -55,15 +57,19 @@ public class CarControllerTest {
 		carDTO.setOwner("test-owner");
 		carDTO.setLicense("1111-T");
 		
-		when(carServiceMock.saveEntity(any(CarEntity.class))).thenReturn(savedCarEntity);
+		when(carMappingMock.parseToEntity(any(CarDTO.class))).thenReturn(carEntity);
+		when(carServiceMock.saveEntity(any(CarEntity.class))).thenReturn(carEntity);
+		when(carMappingMock.parseToDto(any(CarEntity.class))).thenReturn(carDTO);
 		
-		ResponseEntity<CarDTO> response = carController.create(carDTO);
+		ResponseEntity<ResponseDTO> response = carController.create(carDTO);
 		
 		assertNotNull(response);
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
-		assertEquals(savedCarEntity.toString(), response.getBody());
+		assertEquals(carDTO.toString(), response.getBody().toString());
 		
+		verify(carMappingMock, times(1)).parseToEntity(any(CarDTO.class));
 		verify(carServiceMock, times(1)).saveEntity(any(CarEntity.class));
+		verify(carMappingMock, times(1)).parseToDto(any(CarEntity.class));
 	}
 	
 	@Test
@@ -74,23 +80,32 @@ public class CarControllerTest {
 		brandEntity.setId(1L);
 		brandEntity.setName("test-brand");
 		
-		CarEntity savedCarEntity = new CarEntity();
-		savedCarEntity.setId(1L);
-		savedCarEntity.setBrand(brandEntity);
-		savedCarEntity.setModel("test-model");
-		savedCarEntity.setOwner("test-owner");
-		savedCarEntity.setLicense("1111-T");
+		CarEntity carEntity = new CarEntity();
+		carEntity.setId(1L);
+		carEntity.setBrand(brandEntity);
+		carEntity.setModel("test-model");
+		carEntity.setOwner("test-owner");
+		carEntity.setLicense("1111-T");
 		
-		CarDTO carDTO = new CarDTO("test-brand", "test-model", "test-owner", "1111-T");
+		CarDTO carDTO = new CarDTO();
+		carDTO.setBrand("test-brand");
+		carDTO.setModel("test-model");
+		carDTO.setOwner("test-owner");
+		carDTO.setLicense("1111-T");
 		
+		ResponseDTO expectedResponse = new ResponseDTO(HttpStatus.BAD_REQUEST.value(), "Unexpected error");
+		
+		when(carMappingMock.parseToEntity(any(CarDTO.class))).thenReturn(carEntity);
 		when(carServiceMock.saveEntity(any(CarEntity.class))).thenThrow(new ApiException(HttpStatus.BAD_REQUEST.value(), "Unexpected error"));
 		
-		ResponseEntity<CarDTO> response = carController.create(carDTO);
+		ResponseEntity<ResponseDTO> response = carController.create(carDTO);
 		
 		assertNotNull(response);
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-		// TODO assert the body with the error message
+		assertEquals(expectedResponse.toString(), response.getBody().toString());
 		
+		verify(carMappingMock, times(1)).parseToEntity(any(CarDTO.class));
 		verify(carServiceMock, times(1)).saveEntity(any(CarEntity.class));
+		verify(carMappingMock, times(0)).parseToDto(any(CarEntity.class));
 	}
 }

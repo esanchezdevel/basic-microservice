@@ -32,8 +32,11 @@ public class CarController {
 	
 	private final CarService carService;
 	
-	public CarController(CarService carService) {
+	private final CarMapping carMapping;
+	
+	public CarController(CarService carService, CarMapping carMapping) {
 		this.carService = carService;
+		this.carMapping = carMapping;
 	}
 	
 	@PostMapping
@@ -41,9 +44,9 @@ public class CarController {
 		logger.info("Request create car: {}", car);
 		
 		try {
-			CarEntity savedCar = carService.saveEntity(null);
+			CarEntity savedCar = carService.saveEntity(carMapping.parseToEntity(car));
 			
-			return ResponseEntity.status(HttpStatus.CREATED).body(CarMapping.parseToDto(savedCar));
+			return ResponseEntity.status(HttpStatus.CREATED).body(carMapping.parseToDto(savedCar));
 		} catch (ApiException e) {
 			logger.error("Error saving entity in database. {}", e.getMessage());
 			return ResponseEntity.status(e.getErrorCode()).body(new ResponseDTO(e.getErrorCode(), e.getMessage()));

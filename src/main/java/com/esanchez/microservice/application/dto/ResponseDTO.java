@@ -11,6 +11,10 @@ public class ResponseDTO {
 	@JsonInclude(Include.NON_EMPTY)
 	private String errorMessage;
 	
+	public ResponseDTO() {
+		
+	}
+	
 	public ResponseDTO(int errorCode, String errorMessage) {
 		super();
 		this.errorCode = errorCode;
