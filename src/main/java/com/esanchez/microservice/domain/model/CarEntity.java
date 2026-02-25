@@ -7,7 +7,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "cars")
-public class CarEntity {
+public class CarEntity extends BaseEntity {
 
 	private Long id;
 	

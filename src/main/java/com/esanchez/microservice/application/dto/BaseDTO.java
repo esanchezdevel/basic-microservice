@@ -3,7 +3,7 @@ package com.esanchez.microservice.application.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-public class ResponseDTO {
+public class BaseDTO {
 
 	@JsonInclude(Include.NON_EMPTY)
 	private int errorCode;
@@ -11,11 +11,11 @@ public class ResponseDTO {
 	@JsonInclude(Include.NON_EMPTY)
 	private String errorMessage;
 	
-	public ResponseDTO() {
+	public BaseDTO() {
 		
 	}
 	
-	public ResponseDTO(int errorCode, String errorMessage) {
+	public BaseDTO(int errorCode, String errorMessage) {
 		super();
 		this.errorCode = errorCode;
 		this.errorMessage = errorMessage;

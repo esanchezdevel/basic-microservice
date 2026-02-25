@@ -1,6 +1,6 @@
 package com.esanchez.microservice.application.dto;
 
-public class CarDTO extends ResponseDTO {
+public class CarDTO extends BaseDTO {
 
 	private String brand;
 	

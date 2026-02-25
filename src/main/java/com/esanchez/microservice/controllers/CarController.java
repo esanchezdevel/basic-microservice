@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.esanchez.microservice.application.dto.CarDTO;
-import com.esanchez.microservice.application.dto.ResponseDTO;
-import com.esanchez.microservice.application.dto.mapping.CarMapping;
+import com.esanchez.microservice.application.dto.BaseDTO;
+import com.esanchez.microservice.application.dto.mapping.Mapping;
 import com.esanchez.microservice.application.exceptions.ApiException;
 import com.esanchez.microservice.application.services.CarService;
 import com.esanchez.microservice.domain.model.CarEntity;
@@ -32,15 +32,15 @@ public class CarController {
 	
 	private final CarService carService;
 	
-	private final CarMapping carMapping;
+	private final Mapping<CarDTO, CarEntity> carMapping;
 	
-	public CarController(CarService carService, CarMapping carMapping) {
+	public CarController(CarService carService, Mapping<CarDTO, CarEntity> carMapping) {
 		this.carService = carService;
 		this.carMapping = carMapping;
 	}
 	
 	@PostMapping
-	public ResponseEntity<ResponseDTO> create(@RequestBody CarDTO car) {
+	public ResponseEntity<BaseDTO> create(@RequestBody CarDTO car) {
 		logger.info("Request create car: {}", car);
 		
 		try {
@@ -49,7 +49,7 @@ public class CarController {
 			return ResponseEntity.status(HttpStatus.CREATED).body(carMapping.parseToDto(savedCar));
 		} catch (ApiException e) {
 			logger.error("Error saving entity in database. {}", e.getMessage());
-			return ResponseEntity.status(e.getErrorCode()).body(new ResponseDTO(e.getErrorCode(), e.getMessage()));
+			return ResponseEntity.status(e.getErrorCode()).body(new BaseDTO(e.getErrorCode(), e.getMessage()));
 		}
 	}
 	

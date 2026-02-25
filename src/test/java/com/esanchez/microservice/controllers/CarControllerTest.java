@@ -17,8 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.esanchez.microservice.application.dto.CarDTO;
-import com.esanchez.microservice.application.dto.ResponseDTO;
-import com.esanchez.microservice.application.dto.mapping.CarMapping;
+import com.esanchez.microservice.application.dto.BaseDTO;
+import com.esanchez.microservice.application.dto.mapping.Mapping;
 import com.esanchez.microservice.application.exceptions.ApiException;
 import com.esanchez.microservice.application.services.CarService;
 import com.esanchez.microservice.domain.model.BrandEntity;
@@ -28,7 +28,7 @@ import com.esanchez.microservice.domain.model.CarEntity;
 public class CarControllerTest {
 
 	@Mock private CarService carServiceMock;
-	@Mock private CarMapping carMappingMock;
+	@Mock private Mapping<CarDTO, CarEntity> carMappingMock;
 	
 	@InjectMocks
 	private CarController carController;
@@ -61,7 +61,7 @@ public class CarControllerTest {
 		when(carServiceMock.saveEntity(any(CarEntity.class))).thenReturn(carEntity);
 		when(carMappingMock.parseToDto(any(CarEntity.class))).thenReturn(carDTO);
 		
-		ResponseEntity<ResponseDTO> response = carController.create(carDTO);
+		ResponseEntity<BaseDTO> response = carController.create(carDTO);
 		
 		assertNotNull(response);
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -93,12 +93,12 @@ public class CarControllerTest {
 		carDTO.setOwner("test-owner");
 		carDTO.setLicense("1111-T");
 		
-		ResponseDTO expectedResponse = new ResponseDTO(HttpStatus.BAD_REQUEST.value(), "Unexpected error");
+		BaseDTO expectedResponse = new BaseDTO(HttpStatus.BAD_REQUEST.value(), "Unexpected error");
 		
 		when(carMappingMock.parseToEntity(any(CarDTO.class))).thenReturn(carEntity);
 		when(carServiceMock.saveEntity(any(CarEntity.class))).thenThrow(new ApiException(HttpStatus.BAD_REQUEST.value(), "Unexpected error"));
 		
-		ResponseEntity<ResponseDTO> response = carController.create(carDTO);
+		ResponseEntity<BaseDTO> response = carController.create(carDTO);
 		
 		assertNotNull(response);
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
