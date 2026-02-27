@@ -3,7 +3,7 @@
 BASE_URL="http://localhost:8080"
 
 USERNAME="user"
-PASSWORD="password"
+PASSWORD="qwertyui"
 
 echo "Requesting JWT..."
 
@@ -15,7 +15,7 @@ LOGIN_RESPONSE=$(curl -s -X POST "$BASE_URL/v1/api/auth/login" \
 echo "Login response: $LOGIN_RESPONSE"
 
 # Extract token (expects JSON like: {"token":"...."})
-JWT=$(echo "$LOGIN_RESPONSE")
+JWT=$(echo "$LOGIN_RESPONSE" | jq -r '.token')
 
 if [ -z "$JWT" ]; then
   echo "Failed to retrieve JWT"

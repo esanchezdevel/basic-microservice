@@ -1,33 +1,20 @@
 package com.esanchez.microservice.application.security;
 
-import org.springframework.stereotype.Service;
+import com.esanchez.microservice.application.exceptions.ApiException;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+public interface JwtService {
 
-@Service
-public class JwtService {
-
-	private final String SECRET = "test-secret-to-be-configured-somewhere-else";
-
-	public String extractUsername(String token) {
-		return Jwts.parserBuilder()
-				.setSigningKey(Keys.hmacShaKeyFor(SECRET.getBytes()))
-				.build()
-				.parseClaimsJws(token)
-				.getBody()
-				.getSubject();
-	}
-
-	public boolean isValid(String token) {
-		try {
-			Jwts.parserBuilder()
-				.setSigningKey(Keys.hmacShaKeyFor(SECRET.getBytes()))
-				.build()
-				.parseClaimsJws(token);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
+	String extractUsername(String token);
+	
+	boolean isValid(String token);
+	
+	/**
+	 * Check if one user is present in database 
+	 * 
+	 * @param username The user name
+	 * @param password The Hash password
+	 * @return true if it's present. false if it's not present
+	 * @throws ApiException 
+	 */
+	boolean checkAccessUser(String username, String password) throws ApiException;
 }

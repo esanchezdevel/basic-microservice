@@ -16,9 +16,9 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-	private final JwtService jwtService;
+	private final JwtServiceImpl jwtService;
 
-	public JwtAuthenticationFilter(JwtService jwtService) {
+	public JwtAuthenticationFilter(JwtServiceImpl jwtService) {
 		this.jwtService = jwtService;
 	}
 
