@@ -34,6 +34,5 @@ public class BrandServiceImpl implements BrandService {
 			logger.error("Unexpected error saving entity: {}. {}", entity, e.getMessage());
 			throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Unexpected error saving entity: " + entity + ". " + e.getMessage());
 		}
-		
 	}
 }
