@@ -1,9 +1,9 @@
 package com.esanchez.microservice.application.services.impl;
 
-import java.util.List;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -51,10 +51,10 @@ public class CarServiceImpl implements CarService {
 	}
 	
 	@Override
-	public List<CarEntity> getAllEntities() throws ApiException {
+	public Page<CarEntity> getAllEntities(Pageable pageable) throws ApiException {
 		logger.info("Getting all Cars from database");
 		try {
-			return carRepository.findAll();
+			return carRepository.findAll(pageable);
 		} catch (Exception e) {
 			logger.error("Unexpected error getting all entities from database. {}", e.getMessage());
 			throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Unexpected error getting all entities from database. " + e.getMessage());

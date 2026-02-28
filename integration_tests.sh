@@ -41,6 +41,6 @@ curl -vv -X POST "$BASE_URL/v1/api/cars" \
   
 echo ""
 echo "Get cars"
-curl -vv "$BASE_URL/v1/api/cars" \
+curl -vv "$BASE_URL/v1/api/cars?page=0&size=10" \
   -H "Authorization: Bearer $JWT" \
   -H "Accept: application/json" \

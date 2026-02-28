@@ -7,7 +7,6 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +15,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -157,12 +159,13 @@ public class CarControllerTest {
 		carDTO1.setLicense("1112-T");
 		
 		List<CarEntity> cars = List.of(car1, car2);
+		Page<CarEntity> page = new PageImpl<CarEntity>(cars);
 		List<CarDTO> carsDTOs = List.of(carDTO1, carDTO2);
 		
-		when(carServiceMock.getAllEntities()).thenReturn(cars);
+		when(carServiceMock.getAllEntities(any(Pageable.class))).thenReturn(page);
 		when(carMappingMock.parseToDtoList(anyList())).thenReturn(carsDTOs);
 		
-		ResponseEntity<ResponseDTO> result = carController.readAll();
+		ResponseEntity<ResponseDTO> result = carController.readAll(0, 10);
 		
 		assertNotNull(result.getBody());
 		assertEquals(2, ((CarReadAllResponseDTO) result.getBody().getBody()).getCars().size());

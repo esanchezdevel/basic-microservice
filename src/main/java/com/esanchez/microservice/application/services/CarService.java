@@ -1,6 +1,7 @@
 package com.esanchez.microservice.application.services;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.esanchez.microservice.application.exceptions.ApiException;
 import com.esanchez.microservice.domain.model.CarEntity;
@@ -22,5 +23,5 @@ public interface CarService {
 	 * @return List of Car entities
 	 * @throws ApiException
 	 */
-	List<CarEntity> getAllEntities() throws ApiException;
+	Page<CarEntity> getAllEntities(Pageable pageable) throws ApiException;
 }
