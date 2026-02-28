@@ -68,17 +68,15 @@ public class CarController {
 		logger.info("Request read all cars. Page: {}, Size: {}", page, size);
 		
 		try {
-			Pageable pageable = PageRequest.of(page, size);
+			Page<CarEntity> carEntities = carService.getAllEntities(PageRequest.of(page, size));
 			
-			Page<CarEntity> carEntities = carService.getAllEntities(pageable);
-			List<CarDTO> carDtos = carMapping.parseToDtoList(carEntities.getContent());
-			
-			CarReadAllResponseDTO carReadAllResponseDTO = new CarReadAllResponseDTO();
-			carReadAllResponseDTO.setCars(carDtos);
-			carReadAllResponseDTO.setPage(page);
-			carReadAllResponseDTO.setSize(size);
-			carReadAllResponseDTO.setTotalElements(carEntities.getTotalElements());
-			carReadAllResponseDTO.setTotalPages(carEntities.getTotalPages());
+			CarReadAllResponseDTO carReadAllResponseDTO = new CarReadAllResponseDTO.Builder()
+					.cars(carMapping.parseToDtoList(carEntities.getContent()))
+					.size(size)
+					.page(page)
+					.totalElements(carEntities.getTotalElements())
+					.totalPages(carEntities.getTotalPages())
+					.build();
 			
 			ResponseDTO responseDTO = new ResponseDTO();
 			responseDTO.setBody(carReadAllResponseDTO);
