@@ -2,6 +2,8 @@ package com.esanchez.microservice.application.dto;
 
 public class CarDTO extends BaseDTO {
 
+	private String id;
+	
 	private String brand;
 	
 	private String model;
@@ -14,6 +16,14 @@ public class CarDTO extends BaseDTO {
 		super();
 	}
 	
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	public String getBrand() {
 		return brand;
 	}
@@ -48,6 +58,7 @@ public class CarDTO extends BaseDTO {
 
 	@Override
 	public String toString() {
-		return "CarDTO [brand=" + brand + ", model=" + model + ", owner=" + owner + ", license=" + license + "]";
+		return "CarDTO [id=" + id + ", brand=" + brand + ", model=" + model + ", owner=" + owner + ", license="
+				+ license + "]";
 	}
 }

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.esanchez.microservice.application.dto.BrandDTO;
 import com.esanchez.microservice.application.dto.mapping.Mapping;
-import com.esanchez.microservice.application.dto.BaseDTO;
+import com.esanchez.microservice.application.dto.ResponseDTO;
 import com.esanchez.microservice.application.exceptions.ApiException;
 import com.esanchez.microservice.application.services.BrandService;
 import com.esanchez.microservice.domain.model.BrandEntity;
@@ -32,16 +32,18 @@ public class BrandController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<BaseDTO> create(@RequestBody BrandDTO brand) {
+	public ResponseEntity<ResponseDTO> create(@RequestBody BrandDTO brand) {
 		logger.info("Request create brand: {}", brand);
 		
 		try {
 			BrandEntity savedBrand = brandService.saveEntity(brandMapping.parseToEntity(brand));
 			
-			return ResponseEntity.status(HttpStatus.CREATED).body(brandMapping.parseToDto(savedBrand));
+			ResponseDTO responseDTO = new ResponseDTO();
+			responseDTO.setBody(brandMapping.parseToDto(savedBrand));
+			return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 		} catch (ApiException e) {
 			logger.error("Error saving entity in database. {}", e.getMessage());
-			return ResponseEntity.status(e.getErrorCode()).body(new BaseDTO(e.getErrorCode(), e.getMessage()));
+			return ResponseEntity.status(e.getErrorCode()).body(new ResponseDTO(e.getErrorCode(), e.getMessage()));
 		}
 	}
 }

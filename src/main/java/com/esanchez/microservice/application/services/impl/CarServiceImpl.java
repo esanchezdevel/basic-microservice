@@ -1,5 +1,7 @@
 package com.esanchez.microservice.application.services.impl;
 
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -46,5 +48,16 @@ public class CarServiceImpl implements CarService {
 			throw new ApiException(HttpStatus.BAD_REQUEST.value(), "Invalid car entity. Owner is empty");
 		if (entity.getLicense() == null || entity.getLicense().length() == 0) 
 			throw new ApiException(HttpStatus.BAD_REQUEST.value(), "Invalid car entity. License is empty");
+	}
+	
+	@Override
+	public List<CarEntity> getAllEntities() throws ApiException {
+		logger.info("Getting all Cars from database");
+		try {
+			return carRepository.findAll();
+		} catch (Exception e) {
+			logger.error("Unexpected error getting all entities from database. {}", e.getMessage());
+			throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Unexpected error getting all entities from database. " + e.getMessage());
+		}
 	}
 }

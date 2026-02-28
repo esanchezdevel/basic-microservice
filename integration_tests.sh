@@ -15,7 +15,7 @@ LOGIN_RESPONSE=$(curl -s -X POST "$BASE_URL/v1/api/auth/login" \
 echo "Login response: $LOGIN_RESPONSE"
 
 # Extract token (expects JSON like: {"token":"...."})
-JWT=$(echo "$LOGIN_RESPONSE" | jq -r '.token')
+JWT=$(echo "$LOGIN_RESPONSE" | jq -r '.body.token')
 
 if [ -z "$JWT" ]; then
   echo "Failed to retrieve JWT"
@@ -38,3 +38,9 @@ curl -vv -X POST "$BASE_URL/v1/api/cars" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   --data '{"brand": "Renault", "model": "laguna", "owner": "test-owner", "license": "1111-T"}'
+  
+echo ""
+echo "Get cars"
+curl -vv "$BASE_URL/v1/api/cars" \
+  -H "Authorization: Bearer $JWT" \
+  -H "Accept: application/json" \

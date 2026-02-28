@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.esanchez.microservice.application.dto.BaseDTO;
+import com.esanchez.microservice.application.dto.ResponseDTO;
 import com.esanchez.microservice.application.dto.BrandDTO;
 import com.esanchez.microservice.application.dto.mapping.Mapping;
 import com.esanchez.microservice.application.exceptions.ApiException;
@@ -50,11 +50,11 @@ public class BrandControllerTest {
 		when(brandServiceMock.saveEntity(any(BrandEntity.class))).thenReturn(brandEntity);
 		when(brandMappingMock.parseToDto(any(BrandEntity.class))).thenReturn(brandDTO);
 		
-		ResponseEntity<BaseDTO> response = brandController.create(brandDTO);
+		ResponseEntity<ResponseDTO> response = brandController.create(brandDTO);
 		
 		assertNotNull(response);
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
-		assertEquals(brandDTO.toString(), response.getBody().toString());
+		assertEquals(brandDTO.toString(), response.getBody().getBody().toString());
 		
 		verify(brandMappingMock, times(1)).parseToEntity(any(BrandDTO.class));
 		verify(brandServiceMock, times(1)).saveEntity(any(BrandEntity.class));
@@ -72,12 +72,12 @@ public class BrandControllerTest {
 		BrandDTO brandDTO = new BrandDTO();
 		brandDTO.setName("test-brand");
 		
-		BaseDTO expectedResponse = new BaseDTO(HttpStatus.BAD_REQUEST.value(), "Unexpected error");
+		ResponseDTO expectedResponse = new ResponseDTO(HttpStatus.BAD_REQUEST.value(), "Unexpected error");
 		
 		when(brandMappingMock.parseToEntity(any(BrandDTO.class))).thenReturn(brandEntity);
 		when(brandServiceMock.saveEntity(any(BrandEntity.class))).thenThrow(new ApiException(HttpStatus.BAD_REQUEST.value(), "Unexpected error"));
 		
-		ResponseEntity<BaseDTO> response = brandController.create(brandDTO);
+		ResponseEntity<ResponseDTO> response = brandController.create(brandDTO);
 		
 		assertNotNull(response);
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());

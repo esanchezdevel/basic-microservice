@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.esanchez.microservice.application.dto.CarDTO;
-import com.esanchez.microservice.application.dto.BaseDTO;
+import com.esanchez.microservice.application.dto.CarReadAllResponseDTO;
+import com.esanchez.microservice.application.dto.ResponseDTO;
 import com.esanchez.microservice.application.dto.mapping.Mapping;
 import com.esanchez.microservice.application.exceptions.ApiException;
 import com.esanchez.microservice.application.services.CarService;
@@ -40,24 +41,41 @@ public class CarController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<BaseDTO> create(@RequestBody CarDTO car) {
+	public ResponseEntity<ResponseDTO> create(@RequestBody CarDTO car) {
 		logger.info("Request create car: {}", car);
 		
 		try {
 			CarEntity savedCar = carService.saveEntity(carMapping.parseToEntity(car));
 			
-			return ResponseEntity.status(HttpStatus.CREATED).body(carMapping.parseToDto(savedCar));
+			CarDTO carDTO = carMapping.parseToDto(savedCar);
+			ResponseDTO responseDTO = new ResponseDTO();
+			responseDTO.setBody(carDTO);
+			return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 		} catch (ApiException e) {
 			logger.error("Error saving entity in database. {}", e.getMessage());
-			return ResponseEntity.status(e.getErrorCode()).body(new BaseDTO(e.getErrorCode(), e.getMessage()));
+			return ResponseEntity.status(e.getErrorCode()).body(new ResponseDTO(e.getErrorCode(), e.getMessage()));
 		}
 	}
 	
 	@GetMapping
-	public ResponseEntity<List<CarDTO>> readAll() {
+	public ResponseEntity<ResponseDTO> readAll() {
 		logger.info("Request read all cars");
 		
-		return ResponseEntity.ok().build();
+		try {
+			List<CarEntity> carEntities = carService.getAllEntities();
+			List<CarDTO> carDtos = carMapping.parseToDtoList(carEntities);
+			
+			CarReadAllResponseDTO carReadAllResponseDTO = new CarReadAllResponseDTO();
+			carReadAllResponseDTO.setCars(carDtos);
+			
+			ResponseDTO responseDTO = new ResponseDTO();
+			responseDTO.setBody(carReadAllResponseDTO);
+			
+			return ResponseEntity.ok().body(responseDTO);
+		} catch (ApiException e) {
+			logger.error("Error getting entities from database. {}", e.getMessage());
+			return ResponseEntity.status(e.getErrorCode()).body(new ResponseDTO(e.getErrorCode(), e.getMessage()));
+		}
 	}
 	
 	@GetMapping("/{id}")

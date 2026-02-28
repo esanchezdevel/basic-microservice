@@ -1,5 +1,7 @@
 package com.esanchez.microservice.application.services;
 
+import java.util.List;
+
 import com.esanchez.microservice.application.exceptions.ApiException;
 import com.esanchez.microservice.domain.model.CarEntity;
 
@@ -13,4 +15,12 @@ public interface CarService {
 	 * @throws ApiException If any error happens during the process
 	 */
 	CarEntity saveEntity(CarEntity entity) throws ApiException;
+	
+	/**
+	 * Get all the Car entities from database
+	 * 
+	 * @return List of Car entities
+	 * @throws ApiException
+	 */
+	List<CarEntity> getAllEntities() throws ApiException;
 }

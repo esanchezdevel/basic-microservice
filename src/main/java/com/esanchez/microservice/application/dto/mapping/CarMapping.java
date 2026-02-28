@@ -1,5 +1,7 @@
 package com.esanchez.microservice.application.dto.mapping;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
@@ -22,11 +24,20 @@ public class CarMapping implements Mapping<CarDTO, CarEntity> {
 	
 	public CarDTO parseToDto(CarEntity entity) {
 		CarDTO dto = new CarDTO();
+		dto.setId(String.valueOf(entity.getId()));
 		dto.setBrand(entity.getBrand().getName());
 		dto.setModel(entity.getModel());
 		dto.setOwner(entity.getOwner());
 		dto.setLicense(entity.getLicense());
 		return dto;
+	}
+	
+	@Override
+	public List<CarDTO> parseToDtoList(List<CarEntity> entities) {
+		List<CarDTO> dtos = new ArrayList<>();
+		if (entities != null)
+			entities.forEach(entity -> dtos.add(parseToDto(entity)));
+		return dtos;
 	}
 	
 	public CarEntity parseToEntity(CarDTO dto) throws ApiException {

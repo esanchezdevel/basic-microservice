@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.esanchez.microservice.application.dto.BaseDTO;
+import com.esanchez.microservice.application.dto.ResponseDTO;
 import com.esanchez.microservice.application.dto.JwtDTO;
 import com.esanchez.microservice.application.dto.LoginRequestDTO;
 import com.esanchez.microservice.application.security.JwtServiceImpl;
@@ -26,11 +26,11 @@ public class AuthController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<BaseDTO> login(@RequestBody LoginRequestDTO request) {
+	public ResponseEntity<ResponseDTO> login(@RequestBody LoginRequestDTO request) {
 
 		if (!jwtService.checkAccessUser(request.getUsername(), request.getPassword())) {
-			BaseDTO response = new BaseDTO();
-			response.setErrorCode(HttpStatus.UNAUTHORIZED.value());
+			ResponseDTO response = new ResponseDTO();
+			response.setResponseCode(HttpStatus.UNAUTHORIZED.value());
 			response.setErrorMessage("Invalid User/Password.");
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 		}
@@ -43,6 +43,8 @@ public class AuthController {
 		JwtDTO jwtDTO = new JwtDTO();
 		jwtDTO.setToken(jwt);
 		
-		return ResponseEntity.ok(jwtDTO);
+		ResponseDTO responseDTO = new ResponseDTO();
+		responseDTO.setBody(jwtDTO);
+		return ResponseEntity.ok(responseDTO);
 	}
 }
