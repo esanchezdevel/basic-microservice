@@ -1,4 +1,4 @@
-package com.esanchez.microservice.application;
+package com.esanchez.microservice.application.utils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
