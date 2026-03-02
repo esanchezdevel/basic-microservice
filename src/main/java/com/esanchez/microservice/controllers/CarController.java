@@ -1,12 +1,9 @@
 package com.esanchez.microservice.controllers;
 
-import java.util.List;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -52,12 +49,14 @@ public class CarController {
 			CarEntity savedCar = carService.saveEntity(carMapping.parseToEntity(car));
 			
 			CarDTO carDTO = carMapping.parseToDto(savedCar);
-			ResponseDTO responseDTO = new ResponseDTO();
-			responseDTO.setBody(carDTO);
+			ResponseDTO responseDTO = new ResponseDTO.Builder().body(carDTO).build();
 			return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 		} catch (ApiException e) {
 			logger.error("Error saving entity in database. {}", e.getMessage());
-			return ResponseEntity.status(e.getErrorCode()).body(new ResponseDTO(e.getErrorCode(), e.getMessage()));
+			return ResponseEntity.status(e.getErrorCode()).body(new ResponseDTO.Builder()
+																			.responseCode(e.getErrorCode())
+																			.errorMessage(e.getMessage())
+																			.build());
 		}
 	}
 	
@@ -78,13 +77,15 @@ public class CarController {
 					.totalPages(carEntities.getTotalPages())
 					.build();
 			
-			ResponseDTO responseDTO = new ResponseDTO();
-			responseDTO.setBody(carReadAllResponseDTO);
+			ResponseDTO responseDTO = new ResponseDTO.Builder().body(carReadAllResponseDTO).build();
 			
 			return ResponseEntity.ok().body(responseDTO);
 		} catch (ApiException e) {
 			logger.error("Error getting entities from database. {}", e.getMessage());
-			return ResponseEntity.status(e.getErrorCode()).body(new ResponseDTO(e.getErrorCode(), e.getMessage()));
+			return ResponseEntity.status(e.getErrorCode()).body(new ResponseDTO.Builder()
+																			.responseCode(e.getErrorCode())
+																			.errorMessage(e.getMessage())
+																			.build());
 		}
 	}
 	

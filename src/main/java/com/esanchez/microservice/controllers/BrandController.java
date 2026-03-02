@@ -38,12 +38,14 @@ public class BrandController {
 		try {
 			BrandEntity savedBrand = brandService.saveEntity(brandMapping.parseToEntity(brand));
 			
-			ResponseDTO responseDTO = new ResponseDTO();
-			responseDTO.setBody(brandMapping.parseToDto(savedBrand));
+			ResponseDTO responseDTO = new ResponseDTO.Builder().body(brandMapping.parseToDto(savedBrand)).build();
 			return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 		} catch (ApiException e) {
 			logger.error("Error saving entity in database. {}", e.getMessage());
-			return ResponseEntity.status(e.getErrorCode()).body(new ResponseDTO(e.getErrorCode(), e.getMessage()));
+			return ResponseEntity.status(e.getErrorCode()).body(new ResponseDTO.Builder()
+																			.responseCode(e.getErrorCode())
+																			.errorMessage(e.getMessage())
+																			.build());
 		}
 	}
 }

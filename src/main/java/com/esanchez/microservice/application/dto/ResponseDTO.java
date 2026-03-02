@@ -17,38 +17,53 @@ public class ResponseDTO {
 	public ResponseDTO() {
 	}
 	
-	public ResponseDTO(int errorCode, String errorMessage) {
-		super();
-		this.responseCode = errorCode;
-		this.errorMessage = errorMessage;
+	public ResponseDTO(Builder builder) {
+		this.responseCode = builder.responseCode;
+		this.errorMessage = builder.errorMessage;
+		this.body = builder.body;
 	}
 
 	public int getResponseCode() {
 		return responseCode;
 	}
 
-	public void setResponseCode(int errorCode) {
-		this.responseCode = errorCode;
-	}
-
 	public String getErrorMessage() {
 		return errorMessage;
 	}
 
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
-	}
-	
 	public BaseDTO getBody() {
 		return body;
-	}
-
-	public void setBody(BaseDTO body) {
-		this.body = body;
 	}
 
 	@Override
 	public String toString() {
 		return "ResponseDTO [responseCode=" + responseCode + ", errorMessage=" + errorMessage + ", body=" + body + "]";
+	}
+	
+	public static class Builder {
+		private int responseCode;
+		
+		private String errorMessage;
+		
+		private BaseDTO body;
+		
+		public Builder responseCode(int responseCode) {
+			this.responseCode = responseCode;
+			return this;
+		}
+		
+		public Builder errorMessage(String errorMessage) {
+			this.errorMessage = errorMessage;
+			return this;
+		}
+		
+		public Builder body(BaseDTO body) {
+			this.body = body;
+			return this;
+		}
+		
+		public ResponseDTO build() {
+			return new ResponseDTO(this);
+		}
 	}
 }

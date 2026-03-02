@@ -29,9 +29,10 @@ public class AuthController {
 	public ResponseEntity<ResponseDTO> login(@RequestBody LoginRequestDTO request) {
 
 		if (!jwtService.checkAccessUser(request.getUsername(), request.getPassword())) {
-			ResponseDTO response = new ResponseDTO();
-			response.setResponseCode(HttpStatus.UNAUTHORIZED.value());
-			response.setErrorMessage("Invalid User/Password.");
+			ResponseDTO response = new ResponseDTO.Builder()
+												.responseCode(HttpStatus.UNAUTHORIZED.value())
+												.errorMessage("Invalid User/Password.")
+												.build();
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 		}
 		
@@ -43,8 +44,7 @@ public class AuthController {
 		JwtDTO jwtDTO = new JwtDTO();
 		jwtDTO.setToken(jwt);
 		
-		ResponseDTO responseDTO = new ResponseDTO();
-		responseDTO.setBody(jwtDTO);
+		ResponseDTO responseDTO = new ResponseDTO.Builder().body(jwtDTO).build();
 		return ResponseEntity.ok(responseDTO);
 	}
 }

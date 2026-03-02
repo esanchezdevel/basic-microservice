@@ -72,7 +72,7 @@ public class BrandControllerTest {
 		BrandDTO brandDTO = new BrandDTO();
 		brandDTO.setName("test-brand");
 		
-		ResponseDTO expectedResponse = new ResponseDTO(HttpStatus.BAD_REQUEST.value(), "Unexpected error");
+		ResponseDTO expectedResponse = new ResponseDTO.Builder().responseCode(HttpStatus.BAD_REQUEST.value()).errorMessage("Unexpected error").build();
 		
 		when(brandMappingMock.parseToEntity(any(BrandDTO.class))).thenReturn(brandEntity);
 		when(brandServiceMock.saveEntity(any(BrandEntity.class))).thenThrow(new ApiException(HttpStatus.BAD_REQUEST.value(), "Unexpected error"));

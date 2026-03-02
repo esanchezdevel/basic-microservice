@@ -99,7 +99,7 @@ public class CarControllerTest {
 		carDTO.setOwner("test-owner");
 		carDTO.setLicense("1111-T");
 		
-		ResponseDTO expectedResponse = new ResponseDTO(HttpStatus.BAD_REQUEST.value(), "Unexpected error");
+		ResponseDTO expectedResponse = new ResponseDTO.Builder().responseCode(HttpStatus.BAD_REQUEST.value()).errorMessage("Unexpected error").build();
 		
 		when(carMappingMock.parseToEntity(any(CarDTO.class))).thenReturn(carEntity);
 		when(carServiceMock.saveEntity(any(CarEntity.class))).thenThrow(new ApiException(HttpStatus.BAD_REQUEST.value(), "Unexpected error"));
