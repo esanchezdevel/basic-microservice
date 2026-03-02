@@ -32,6 +32,10 @@ public class BrandServiceImpl implements BrandService {
 			return brandRepository.save(entity);
 		} catch (Exception e) {
 			logger.error("Unexpected error saving entity: {}. {}", entity, e.getMessage());
+			
+			if (e.getMessage().contains("Unique index or primary key violation")) {
+				throw new ApiException(HttpStatus.CONFLICT.value(), "Unique index or primary key violation");
+			}
 			throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Unexpected error saving entity: " + entity + ". " + e.getMessage());
 		}
 	}

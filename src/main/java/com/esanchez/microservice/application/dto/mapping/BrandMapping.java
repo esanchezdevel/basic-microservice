@@ -15,6 +15,7 @@ public class BrandMapping implements Mapping<BrandDTO, BrandEntity> {
 	@Override
 	public BrandDTO parseToDto(BrandEntity entity) {
 		BrandDTO dto = new BrandDTO();
+		dto.setId(String.valueOf(entity.getId()));
 		dto.setName(entity.getName());
 		return dto;
 	}
