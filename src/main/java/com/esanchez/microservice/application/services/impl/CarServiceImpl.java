@@ -1,5 +1,7 @@
 package com.esanchez.microservice.application.services.impl;
 
+import java.util.Optional;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
@@ -59,5 +61,11 @@ public class CarServiceImpl implements CarService {
 			logger.error("Unexpected error getting all entities from database. {}", e.getMessage());
 			throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Unexpected error getting all entities from database. " + e.getMessage());
 		}
+	}
+	
+	@Override
+	public Optional<CarEntity> getEntity(Long id) throws ApiException {
+		// TODO Auto-generated method stub
+		return Optional.empty();
 	}
 }

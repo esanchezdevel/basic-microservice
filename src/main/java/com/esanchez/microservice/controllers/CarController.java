@@ -1,5 +1,7 @@
 package com.esanchez.microservice.controllers;
 
+import java.util.Optional;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
@@ -90,10 +92,32 @@ public class CarController {
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<CarDTO> read(@PathVariable Long id) {
+	public ResponseEntity<ResponseDTO> read(@PathVariable Long id) {
 		logger.info("Request read car with id {}", id);
 		
-		return ResponseEntity.ok().build();
+		try {
+			Optional<CarEntity> carEntity = carService.getEntity(id);
+			
+			if (carEntity.isEmpty()) {
+				ResponseDTO response = new ResponseDTO.Builder()
+													.responseCode(HttpStatus.NOT_FOUND.value())
+													.errorMessage("Car not found in databaes with id " + id)
+													.build();
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+			}
+			
+			ResponseDTO response = new ResponseDTO.Builder()
+												.responseCode(HttpStatus.OK.value())
+												.body(carMapping.parseToDto(carEntity.get()))
+												.build();
+			return ResponseEntity.ok(response);
+		} catch (ApiException e) {
+			logger.error("Error getting entity from database with id {}. {}", id, e.getMessage());
+			return ResponseEntity.status(e.getErrorCode()).body(new ResponseDTO.Builder()
+																			.responseCode(e.getErrorCode())
+																			.errorMessage(e.getMessage())
+																			.build());
+		}
 	}
 	
 	@PutMapping("/{id}")

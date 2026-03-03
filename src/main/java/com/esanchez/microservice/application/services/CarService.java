@@ -1,5 +1,7 @@
 package com.esanchez.microservice.application.services;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -24,4 +26,13 @@ public interface CarService {
 	 * @throws ApiException
 	 */
 	Page<CarEntity> getAllEntities(Pageable pageable) throws ApiException;
+	
+	/**
+	 * Get one Car entity from database looking for the id
+	 * 
+	 * @param id The id of the entity
+	 * @return Optional of CarEntity found in database.
+	 * @throws ApiException
+	 */
+	Optional<CarEntity> getEntity(Long id) throws ApiException;
 }

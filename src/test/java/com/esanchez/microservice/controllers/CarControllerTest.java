@@ -1,13 +1,16 @@
 package com.esanchez.microservice.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -169,5 +172,59 @@ public class CarControllerTest {
 		
 		assertNotNull(result.getBody());
 		assertEquals(2, ((CarReadAllResponseDTO) result.getBody().getBody()).getCars().size());
+	}
+	
+	/**
+	 * Tests GET read car by id
+	 */
+	@Test
+	@DisplayName("Given one car id When the car is present in database Then return the Car DTO")
+	void givenOneCarIdWhenTheCarIsPresentThenReturnDTO() {
+		
+		CarDTO expectedCarDTO = new CarDTO();
+		expectedCarDTO.setId("1");
+		expectedCarDTO.setBrand("test-brand");
+		expectedCarDTO.setModel("test-model");
+		expectedCarDTO.setOwner("test-owner");
+		expectedCarDTO.setLicense("test-license");
+		
+		when(carServiceMock.getEntity(any(Long.class))).thenReturn(Optional.of(new CarEntity()));
+		when(carMappingMock.parseToDto(any(CarEntity.class))).thenReturn(expectedCarDTO);
+		
+		ResponseEntity<ResponseDTO> result = carController.read(1L);
+		
+		assertNotNull(result);
+		assertEquals(HttpStatus.OK, result.getStatusCode());
+		assertTrue(result.getBody().getBody() instanceof CarDTO);
+		CarDTO carDTO = (CarDTO) result.getBody().getBody();
+		assertEquals(expectedCarDTO.toString(), carDTO.toString());
+	}
+	
+	@Test
+	@DisplayName("Given one car id When the car is not present in database Then return Not Found error")
+	void givenOneCarIdWhenTheCarIsNotPresentThenReturnNotFoundError() {
+		
+		when(carServiceMock.getEntity(any(Long.class))).thenReturn(Optional.empty());
+		
+		ResponseEntity<ResponseDTO> result = carController.read(1L);
+		
+		assertNotNull(result);
+		assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+		assertNull(result.getBody().getBody());
+		assertEquals("Car not found in databaes with id 1", result.getBody().getErrorMessage());
+	}
+	
+	@Test
+	@DisplayName("Given one car id When unexpected error happens Then return error")
+	void givenOneCarIdWhenUnexpectedErrorThenReturnError() {
+		
+		when(carServiceMock.getEntity(any(Long.class))).thenThrow(new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Unexpected error"));
+		
+		ResponseEntity<ResponseDTO> result = carController.read(1L);
+		
+		assertNotNull(result);
+		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
+		assertNull(result.getBody().getBody());
+		assertEquals("Unexpected error", result.getBody().getErrorMessage());
 	}
 }
