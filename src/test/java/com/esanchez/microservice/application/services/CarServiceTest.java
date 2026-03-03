@@ -1,6 +1,7 @@
 package com.esanchez.microservice.application.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
@@ -8,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.any;
 
@@ -37,6 +39,10 @@ public class CarServiceTest {
 	
 	@InjectMocks
 	private CarServiceImpl carService;
+	
+	/*
+	 * Tests save method
+	 */
 	
 	@Test
 	@DisplayName("Given a valid entity then save in database is success")
@@ -84,6 +90,10 @@ public class CarServiceTest {
 		verify(carRepository, times(0)).save(any(CarEntity.class));
 	}
 	
+	/*
+	 * Tests getAllEntities method
+	 */
+	
 	@Test
 	@DisplayName("Given a Pageable then returns Page")
 	void givenPageableThenReturnPage() {
@@ -127,10 +137,6 @@ public class CarServiceTest {
 		car.setOwner("test-owner");
 		car.setLicense("1111-T");
 		
-		List<CarEntity> cars = List.of(car);
-		
-		Page<CarEntity> page = new PageImpl<CarEntity>(cars);
-		
 		when(carRepository.findAll(any(Pageable.class))).thenThrow(new RuntimeException("Unexpected error"));
 
 		ApiException exception = assertThrows(ApiException.class, () -> carService.getAllEntities(PageRequest.of(0, 10)));
@@ -140,5 +146,38 @@ public class CarServiceTest {
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), exception.getErrorCode());
 		
 		verify(carRepository, times(1)).findAll(any(Pageable.class));
+	}
+	
+	/*
+	 * Tests getEntity method
+	 */
+	@Test
+	@DisplayName("Given one id When car is present in database Then return entity")
+	void givenOneIdWhenCarIsPresentInDatabaseThenReturnEntity() {
+	
+		CarEntity expectedCarEntity = buildCarEntity();
+		
+		when(carRepository.findById(any(Long.class))).thenReturn(Optional.of(expectedCarEntity));
+		
+		Optional<CarEntity> result = carService.getEntity(1L);
+		
+		assertNotNull(result);
+		assertTrue(result.isPresent());
+		assertEquals(1L, result.get().getId());
+	}
+	
+	private CarEntity buildCarEntity() {
+		BrandEntity brand = new BrandEntity();
+		brand.setId(1L);
+		brand.setName("test-brand");
+		
+		CarEntity carEntity = new CarEntity();
+		carEntity.setId(1L);
+		carEntity.setBrand(brand);
+		carEntity.setOwner("test-owner");
+		carEntity.setModel("test-model");
+		carEntity.setLicense("1111-T");
+		
+		return carEntity;
 	}
 }
