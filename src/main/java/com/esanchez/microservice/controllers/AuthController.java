@@ -1,5 +1,9 @@
 package com.esanchez.microservice.controllers;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,8 +40,15 @@ public class AuthController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 		}
 		
+		LocalDateTime nowTime = LocalDateTime.now();
+		LocalDateTime expirationTime = nowTime.plusHours(1);
+		Date nowDate = Date.from(nowTime.atZone(ZoneId.systemDefault()).toInstant());
+		Date expirationDate = Date.from(expirationTime.atZone(ZoneId.systemDefault()).toInstant());
+		
 		String jwt = Jwts.builder()
 							.setSubject(request.getUsername())
+							.setIssuedAt(nowDate)
+							.setExpiration(expirationDate)
 							.signWith(Keys.hmacShaKeyFor("test-secret-to-be-configured-somewhere-else".getBytes()))
 							.compact();
 		
