@@ -65,7 +65,13 @@ public class CarServiceImpl implements CarService {
 	
 	@Override
 	public Optional<CarEntity> getEntity(Long id) throws ApiException {
-		// TODO Auto-generated method stub
-		return Optional.empty();
+		logger.info("Getting car entity with id {}", id);
+		
+		try {
+			return carRepository.findById(id);
+		} catch (Exception e) {
+			logger.error("Unexpected error getting entity with id {}. {}", id, e.getMessage());
+			throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+		}
 	}
 }

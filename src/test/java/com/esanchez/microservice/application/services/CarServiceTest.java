@@ -166,6 +166,31 @@ public class CarServiceTest {
 		assertEquals(1L, result.get().getId());
 	}
 	
+	@Test
+	@DisplayName("Given one id When car is not present in database Then return Empty")
+	void givenOneIdWhenCarIsNotPresentInDatabaseThenReturnEmpty() {
+	
+		when(carRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+		
+		Optional<CarEntity> result = carService.getEntity(1L);
+		
+		assertNotNull(result);
+		assertTrue(result.isEmpty());
+	}
+	
+	@Test
+	@DisplayName("Given one id When error happens Then throw exception")
+	void givenOneIdWhenErrorHappensThenThrowException() {
+	
+		when(carRepository.findById(any(Long.class))).thenThrow(new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Unexpected error"));
+		
+		ApiException exception = assertThrows(ApiException.class, () -> carService.getEntity(1L));
+		
+		assertNotNull(exception);
+		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), exception.getErrorCode());
+		assertEquals("Unexpected error", exception.getMessage());
+	}
+	
 	private CarEntity buildCarEntity() {
 		BrandEntity brand = new BrandEntity();
 		brand.setId(1L);

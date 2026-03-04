@@ -44,3 +44,10 @@ echo "Get cars"
 curl -vv "$BASE_URL/v1/api/cars?page=0&size=10" \
   -H "Authorization: Bearer $JWT" \
   -H "Accept: application/json" \
+  
+  
+echo ""
+echo "Get car with id 1"
+curl -vv "$BASE_URL/v1/api/cars/1" \
+  -H "Authorization: Bearer $JWT" \
+  -H "Accept: application/json" \
