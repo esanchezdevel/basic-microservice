@@ -45,9 +45,11 @@ public class CarMapping implements Mapping<CarDTO, CarEntity> {
 		Optional<BrandEntity> brand = brandRepository.findByName(dto.getBrand());
 		
 		if (brand.isEmpty())
-			throw new ApiException(HttpStatus.NOT_FOUND.value(), "Brand '{}' not found in database");
+			throw new ApiException(HttpStatus.NOT_FOUND.value(), "Brand '" + dto.getBrand() + "' not found in database");
 		
 		CarEntity entity = new CarEntity();
+		
+		if (dto.getId() != null) entity.setId(Long.valueOf(dto.getId()));
 		entity.setBrand(brand.get());
 		entity.setModel(dto.getModel());
 		entity.setOwner(dto.getOwner());

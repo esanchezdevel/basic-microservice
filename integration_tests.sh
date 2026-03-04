@@ -51,3 +51,19 @@ echo "Get car with id 1"
 curl -vv "$BASE_URL/v1/api/cars/1" \
   -H "Authorization: Bearer $JWT" \
   -H "Accept: application/json" \
+
+  
+echo ""
+echo "Update car"
+curl -vv -X PUT "$BASE_URL/v1/api/cars/1" \
+  -H "Authorization: Bearer $JWT" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  --data '{"id": "1", "brand": "Renault", "model": "laguna2", "owner": "test-owner2", "license": "1111-X"}'
+
+  
+echo ""
+echo "Check updated entity"
+curl -vv "$BASE_URL/v1/api/cars/1" \
+  -H "Authorization: Bearer $JWT" \
+  -H "Accept: application/json" \

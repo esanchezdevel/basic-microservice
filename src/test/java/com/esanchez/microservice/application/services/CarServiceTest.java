@@ -43,7 +43,6 @@ public class CarServiceTest {
 	/*
 	 * Tests save method
 	 */
-	
 	@Test
 	@DisplayName("Given a valid entity then save in database is success")
 	void givenValidEntityThenSaveInDatabaseSuccess() {
@@ -93,7 +92,6 @@ public class CarServiceTest {
 	/*
 	 * Tests getAllEntities method
 	 */
-	
 	@Test
 	@DisplayName("Given a Pageable then returns Page")
 	void givenPageableThenReturnPage() {
@@ -155,7 +153,7 @@ public class CarServiceTest {
 	@DisplayName("Given one id When car is present in database Then return entity")
 	void givenOneIdWhenCarIsPresentInDatabaseThenReturnEntity() {
 	
-		CarEntity expectedCarEntity = buildCarEntity();
+		CarEntity expectedCarEntity = buildCarEntity(1L, "test-name", 1L, "test-model", "test-owner", "1111-T");
 		
 		when(carRepository.findById(any(Long.class))).thenReturn(Optional.of(expectedCarEntity));
 		
@@ -191,17 +189,53 @@ public class CarServiceTest {
 		assertEquals("Unexpected error", exception.getMessage());
 	}
 	
-	private CarEntity buildCarEntity() {
-		BrandEntity brand = new BrandEntity();
-		brand.setId(1L);
-		brand.setName("test-brand");
+	/*
+	 * Tests update method
+	 */
+	@Test
+	@DisplayName("Given one id When car is present in database Then update")
+	void givenOneIdWhenCarIsPresentInDatabaseThenUpdate() {
+		
+		CarEntity carEntity = buildCarEntity(1L, "test-name2", 1L, "test-model2", "test-owner2", "1111-X");
+		CarEntity dbCarEntity = buildCarEntity(1L, "test-name", 1L, "test-model", "test-owner", "1111-T");
+		
+		when(carRepository.findById(any(Long.class))).thenReturn(Optional.of(dbCarEntity));
+		
+		CarEntity updatedCarEntity = carService.update(1L, carEntity);
+		
+		assertNotNull(updatedCarEntity);
+		assertEquals("test-name2", updatedCarEntity.getBrand().getName());
+		assertEquals("test-model2", updatedCarEntity.getModel());
+		assertEquals("test-owner2", updatedCarEntity.getOwner());
+		assertEquals("1111-X", updatedCarEntity.getLicense());
+	}
+
+	@Test
+	@DisplayName("Given one id When car is NOT present in database Then throw error")
+	void givenOneIdWhenCarIsNotPresentInDatabaseThenThrowError() {
+		
+		CarEntity carEntity = buildCarEntity(1L, "test-name2", 1L, "test-model2", "test-owner2", "1111-X");
+		
+		when(carRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+		
+		ApiException exception = assertThrows(ApiException.class, () -> carService.update(1L, carEntity));
+		
+		assertNotNull(exception);
+		assertEquals(HttpStatus.NOT_FOUND.value(), exception.getErrorCode());
+		assertEquals("Car not found in database", exception.getMessage());
+	}
+	
+	private CarEntity buildCarEntity(long brandId, String brandName, long carId, String carModel, String carOwner, String carLicense) {
+		BrandEntity brandEntity = new BrandEntity();
+		brandEntity.setId(brandId);
+		brandEntity.setName(brandName);
 		
 		CarEntity carEntity = new CarEntity();
-		carEntity.setId(1L);
-		carEntity.setBrand(brand);
-		carEntity.setOwner("test-owner");
-		carEntity.setModel("test-model");
-		carEntity.setLicense("1111-T");
+		carEntity.setId(carId);
+		carEntity.setBrand(brandEntity);
+		carEntity.setModel(carModel);
+		carEntity.setOwner(carOwner);
+		carEntity.setLicense(carLicense);
 		
 		return carEntity;
 	}

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.esanchez.microservice.application.exceptions.ApiException;
 import com.esanchez.microservice.application.services.CarService;
@@ -76,8 +77,28 @@ public class CarServiceImpl implements CarService {
 	}
 	
 	@Override
+	@Transactional
 	public CarEntity update(Long id, CarEntity carEntity) throws ApiException {
-		// TODO Auto-generated method stub
-		return null;
+		logger.info("Updating car entity with id {}. Entity: {}", id, carEntity);
+		
+		try {
+			Optional<CarEntity> dbCarEntity = carRepository.findById(id);
+			
+			if (dbCarEntity.isEmpty())
+				throw new ApiException(HttpStatus.NOT_FOUND.value(), "Car not found in database");
+		
+			dbCarEntity.get().setId(carEntity.getId());
+			dbCarEntity.get().setBrand(carEntity.getBrand());
+			dbCarEntity.get().setModel(carEntity.getModel());
+			dbCarEntity.get().setOwner(carEntity.getOwner());
+			dbCarEntity.get().setLicense(carEntity.getLicense());
+			
+			return dbCarEntity.get();
+		} catch (ApiException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error("Unexpected error getting entity from database. {}", e.getMessage());
+			throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+		}
 	}
 }
