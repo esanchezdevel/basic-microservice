@@ -35,4 +35,15 @@ public interface CarService {
 	 * @throws ApiException
 	 */
 	Optional<CarEntity> getEntity(Long id) throws ApiException;
+	
+	/**
+	 * Update the full entity in database.
+	 * If the entity is not present in database, an ApiException is thrown.
+	 * 
+	 * @param id CarEntity id
+	 * @param carEntity The full entity to be persisted in database
+	 * @return The carEntity updated
+	 * @throws ApiException
+	 */
+	CarEntity update(Long id, CarEntity carEntity) throws ApiException;
 }

@@ -227,4 +227,71 @@ public class CarControllerTest {
 		assertNull(result.getBody().getBody());
 		assertEquals("Unexpected error", result.getBody().getErrorMessage());
 	}
+	
+	/**
+	 * Tests PUT update car
+	 */
+	@Test
+	@DisplayName("Given one car id When is present in database Then update the full entity")
+	void givenOneCarIdWhenIsPresentInDbThenUpdateFullEntity() {
+		
+		CarDTO carDTO = buildCarDTO("1", "test-brand", "test-model", "test-owner", "1111-T");
+		
+		CarEntity carEntity = buildCarEntity(1L, "test-brand", 1L, "test-model", "test-owner", "1111-T");
+		
+		when(carMappingMock.parseToEntity(any(CarDTO.class))).thenReturn(carEntity);
+		when(carServiceMock.update(any(Long.class), any(CarEntity.class))).thenReturn(carEntity);
+		when(carMappingMock.parseToDto(any(CarEntity.class))).thenReturn(carDTO);
+		
+		ResponseEntity<ResponseDTO> result = carController.update(1L, carDTO);
+		
+		assertNotNull(result);
+		assertEquals(HttpStatus.OK, result.getStatusCode());
+		assertEquals(carDTO, result.getBody().getBody());
+	}
+	
+	@Test
+	@DisplayName("Given one car id When is not present in database Then return Not Found error")
+	void givenOneCarIdWhenIsNotPresentInDbThenReturnNotFound() {
+		
+		CarDTO carDTO = buildCarDTO("1", "test-brand", "test-model", "test-owner", "1111-T");
+		
+		CarEntity carEntity = buildCarEntity(1L, "test-brand", 1L, "test-model", "test-owner", "1111-T");
+		
+		when(carMappingMock.parseToEntity(any(CarDTO.class))).thenReturn(carEntity);
+		when(carServiceMock.update(any(Long.class), any(CarEntity.class))).thenThrow(new ApiException(HttpStatus.NOT_FOUND.value(), "Car not found in database"));
+		
+		ResponseEntity<ResponseDTO> result = carController.update(1L, carDTO);
+		
+		assertNotNull(result);
+		assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+		assertEquals("Car not found in database", result.getBody().getErrorMessage());
+	}
+	
+
+	private CarDTO buildCarDTO (String id, String brand, String model, String owner, String license) {
+		CarDTO carDTO = new CarDTO();
+		carDTO.setId(id);
+		carDTO.setBrand(brand);
+		carDTO.setModel(model);
+		carDTO.setOwner(owner);
+		carDTO.setLicense(license);
+		
+		return carDTO;
+	}
+	
+	private CarEntity buildCarEntity(long brandId, String brandName, long carId, String carModel, String carOwner, String carLicense) {
+		BrandEntity brandEntity = new BrandEntity();
+		brandEntity.setId(brandId);
+		brandEntity.setName(brandName);
+		
+		CarEntity carEntity = new CarEntity();
+		carEntity.setId(carId);
+		carEntity.setBrand(brandEntity);
+		carEntity.setModel(carModel);
+		carEntity.setOwner(carOwner);
+		carEntity.setLicense(carLicense);
+		
+		return carEntity;
+	}
 }

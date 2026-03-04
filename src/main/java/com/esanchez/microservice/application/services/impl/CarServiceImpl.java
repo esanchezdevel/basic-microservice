@@ -74,4 +74,10 @@ public class CarServiceImpl implements CarService {
 			throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
 		}
 	}
+	
+	@Override
+	public CarEntity update(Long id, CarEntity carEntity) throws ApiException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
