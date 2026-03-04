@@ -32,16 +32,11 @@ public class JwtServiceImpl implements JwtService {
 				.getSubject();
 	}
 
-	public boolean isValid(String token) {
-		try {
+	public void validate(String token) throws Exception {
 			Jwts.parserBuilder()
 				.setSigningKey(Keys.hmacShaKeyFor(SECRET.getBytes()))
 				.build()
 				.parseClaimsJws(token);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
 	}
 	
 	@Override
