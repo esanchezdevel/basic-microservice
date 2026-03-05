@@ -125,7 +125,7 @@ public class CarController {
 		logger.info("Request update car. id: {}, car: {}", id, car);
 		
 		try {
-			CarEntity updatedCar = carService.update(id, carMapping.parseToEntity(car));
+			CarEntity updatedCar = carService.updateEntity(id, carMapping.parseToEntity(car));
 			return ResponseEntity.ok(new ResponseDTO.Builder()
 												.responseCode(HttpStatus.OK.value())
 												.body(carMapping.parseToDto(updatedCar))
@@ -140,10 +140,22 @@ public class CarController {
 	}
 
 	@PatchMapping("/{id}")
-	public ResponseEntity<CarDTO> partialUpdate(@PathVariable Long id, @RequestBody CarDTO car) {
+	public ResponseEntity<ResponseDTO> partialUpdate(@PathVariable Long id, @RequestBody CarDTO car) {
 		logger.info("Request partial update car. id: {}, car: {}", id, car);
 		
-		return ResponseEntity.ok().build();
+		try {
+			CarEntity updatedCar = carService.partialUpdateEntity(id, carMapping.parseToEntity(car));
+			return ResponseEntity.ok(new ResponseDTO.Builder()
+												.responseCode(HttpStatus.OK.value())
+												.body(carMapping.parseToDto(updatedCar))
+												.build());
+		} catch (ApiException e) {
+			logger.error("Error in partial update of CarEntity with id {}. {}", id, e.getMessage());
+			return ResponseEntity.status(e.getErrorCode()).body(new ResponseDTO.Builder()
+																			.responseCode(e.getErrorCode())
+																			.errorMessage(e.getMessage())
+																			.build());
+		}
 	}
 	
 	@DeleteMapping("/{id}")

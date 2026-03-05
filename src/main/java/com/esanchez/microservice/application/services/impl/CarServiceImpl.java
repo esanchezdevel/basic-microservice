@@ -78,7 +78,7 @@ public class CarServiceImpl implements CarService {
 	
 	@Override
 	@Transactional
-	public CarEntity update(Long id, CarEntity carEntity) throws ApiException {
+	public CarEntity updateEntity(Long id, CarEntity carEntity) throws ApiException {
 		logger.info("Updating car entity with id {}. Entity: {}", id, carEntity);
 		
 		try {
@@ -92,6 +92,32 @@ public class CarServiceImpl implements CarService {
 			dbCarEntity.get().setModel(carEntity.getModel());
 			dbCarEntity.get().setOwner(carEntity.getOwner());
 			dbCarEntity.get().setLicense(carEntity.getLicense());
+			
+			return dbCarEntity.get();
+		} catch (ApiException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error("Unexpected error getting entity from database. {}", e.getMessage());
+			throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+		}
+	}
+	
+	@Override
+	@Transactional
+	public CarEntity partialUpdateEntity(Long id, CarEntity carEntity) throws ApiException {
+		logger.info("Partial Updating car entity with id {}. Entity: {}", id, carEntity);
+		
+		try {
+			Optional<CarEntity> dbCarEntity = carRepository.findById(id);
+			
+			if (dbCarEntity.isEmpty())
+				throw new ApiException(HttpStatus.NOT_FOUND.value(), "Car not found in database");
+		
+			if (carEntity.getId() != null && carEntity.getId() != 0L) dbCarEntity.get().setId(carEntity.getId());
+			if (carEntity.getBrand() != null) dbCarEntity.get().setBrand(carEntity.getBrand());
+			if (carEntity.getModel() != null) dbCarEntity.get().setModel(carEntity.getModel());
+			if (carEntity.getOwner() != null) dbCarEntity.get().setOwner(carEntity.getOwner());
+			if (carEntity.getLicense() != null) dbCarEntity.get().setLicense(carEntity.getLicense());
 			
 			return dbCarEntity.get();
 		} catch (ApiException e) {

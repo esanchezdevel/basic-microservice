@@ -240,7 +240,7 @@ public class CarControllerTest {
 		CarEntity carEntity = buildCarEntity(1L, "test-brand", 1L, "test-model", "test-owner", "1111-T");
 		
 		when(carMappingMock.parseToEntity(any(CarDTO.class))).thenReturn(carEntity);
-		when(carServiceMock.update(any(Long.class), any(CarEntity.class))).thenReturn(carEntity);
+		when(carServiceMock.updateEntity(any(Long.class), any(CarEntity.class))).thenReturn(carEntity);
 		when(carMappingMock.parseToDto(any(CarEntity.class))).thenReturn(carDTO);
 		
 		ResponseEntity<ResponseDTO> result = carController.update(1L, carDTO);
@@ -259,9 +259,55 @@ public class CarControllerTest {
 		CarEntity carEntity = buildCarEntity(1L, "test-brand", 1L, "test-model", "test-owner", "1111-T");
 		
 		when(carMappingMock.parseToEntity(any(CarDTO.class))).thenReturn(carEntity);
-		when(carServiceMock.update(any(Long.class), any(CarEntity.class))).thenThrow(new ApiException(HttpStatus.NOT_FOUND.value(), "Car not found in database"));
+		when(carServiceMock.updateEntity(any(Long.class), any(CarEntity.class))).thenThrow(new ApiException(HttpStatus.NOT_FOUND.value(), "Car not found in database"));
 		
 		ResponseEntity<ResponseDTO> result = carController.update(1L, carDTO);
+		
+		assertNotNull(result);
+		assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+		assertEquals("Car not found in database", result.getBody().getErrorMessage());
+	}
+	
+	/**
+	 * Tests PATCH partialUpdate car
+	 */
+	@Test
+	@DisplayName("Given one car id When is present in database Then update the partial entity")
+	void givenOneCarIdWhenIsPresentInDbThenUpdatePartialEntity() {
+		
+		CarDTO carDTO = new CarDTO();
+		carDTO.setLicense("1111-X");
+		
+		CarEntity carEntity = new CarEntity();
+		carEntity.setLicense("1111-X");
+		
+		CarEntity updatedCarEntity = buildCarEntity(1L, "test-brand", 1L, "test-model", "test-owner", "1111-X");
+		
+		when(carMappingMock.parseToEntity(any(CarDTO.class))).thenReturn(carEntity);
+		when(carServiceMock.partialUpdateEntity(any(Long.class), any(CarEntity.class))).thenReturn(updatedCarEntity);
+		when(carMappingMock.parseToDto(any(CarEntity.class))).thenReturn(carDTO);
+		
+		ResponseEntity<ResponseDTO> result = carController.partialUpdate(1L, carDTO);
+		
+		assertNotNull(result);
+		assertEquals(HttpStatus.OK, result.getStatusCode());
+		assertEquals(carDTO, result.getBody().getBody());
+	}
+	
+	@Test
+	@DisplayName("Given one car id When partial update and is not present in database Then return Not Found error")
+	void givenOneCarIdWhenPartialUpdateAndIsNotPresentInDbThenReturnNotFound() {
+		
+		CarDTO carDTO = new CarDTO();
+		carDTO.setLicense("1111-X");
+		
+		CarEntity carEntity = new CarEntity();
+		carEntity.setLicense("1111-X");
+		
+		when(carMappingMock.parseToEntity(any(CarDTO.class))).thenReturn(carEntity);
+		when(carServiceMock.partialUpdateEntity(any(Long.class), any(CarEntity.class))).thenThrow(new ApiException(HttpStatus.NOT_FOUND.value(), "Car not found in database"));
+		
+		ResponseEntity<ResponseDTO> result = carController.partialUpdate(1L, carDTO);
 		
 		assertNotNull(result);
 		assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());

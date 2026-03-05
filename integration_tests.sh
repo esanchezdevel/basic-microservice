@@ -43,14 +43,14 @@ echo ""
 echo "Get cars"
 curl -vv "$BASE_URL/v1/api/cars?page=0&size=10" \
   -H "Authorization: Bearer $JWT" \
-  -H "Accept: application/json" \
+  -H "Accept: application/json"
   
   
 echo ""
 echo "Get car with id 1"
 curl -vv "$BASE_URL/v1/api/cars/1" \
   -H "Authorization: Bearer $JWT" \
-  -H "Accept: application/json" \
+  -H "Accept: application/json"
 
   
 echo ""
@@ -64,6 +64,23 @@ curl -vv -X PUT "$BASE_URL/v1/api/cars/1" \
   
 echo ""
 echo "Check updated entity"
-curl -vv "$BASE_URL/v1/api/cars/1" \
+curl "$BASE_URL/v1/api/cars/1" \
   -H "Authorization: Bearer $JWT" \
+  -H "Accept: application/json"
+  
+echo ""
+echo "Partial Update car"
+curl -vv -X PATCH "$BASE_URL/v1/api/cars/1" \
+  -H "Authorization: Bearer $JWT" \
+  -H "Content-Type: application/json" \
   -H "Accept: application/json" \
+  --data '{"license": "1111-Y"}'
+
+echo ""
+echo "Check partial updated entity"
+curl "$BASE_URL/v1/api/cars/1" \
+  -H "Authorization: Bearer $JWT" \
+  -H "Accept: application/json"
+  
+echo
+echo "Integration tests finished..."

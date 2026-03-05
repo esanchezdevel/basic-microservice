@@ -190,7 +190,7 @@ public class CarServiceTest {
 	}
 	
 	/*
-	 * Tests update method
+	 * Tests updateEntity method
 	 */
 	@Test
 	@DisplayName("Given one id When car is present in database Then update")
@@ -201,7 +201,7 @@ public class CarServiceTest {
 		
 		when(carRepository.findById(any(Long.class))).thenReturn(Optional.of(dbCarEntity));
 		
-		CarEntity updatedCarEntity = carService.update(1L, carEntity);
+		CarEntity updatedCarEntity = carService.updateEntity(1L, carEntity);
 		
 		assertNotNull(updatedCarEntity);
 		assertEquals("test-name2", updatedCarEntity.getBrand().getName());
@@ -218,7 +218,45 @@ public class CarServiceTest {
 		
 		when(carRepository.findById(any(Long.class))).thenReturn(Optional.empty());
 		
-		ApiException exception = assertThrows(ApiException.class, () -> carService.update(1L, carEntity));
+		ApiException exception = assertThrows(ApiException.class, () -> carService.updateEntity(1L, carEntity));
+		
+		assertNotNull(exception);
+		assertEquals(HttpStatus.NOT_FOUND.value(), exception.getErrorCode());
+		assertEquals("Car not found in database", exception.getMessage());
+	}
+	
+	/*
+	 * Tests partialUpdateEntity method
+	 */
+	@Test
+	@DisplayName("Given one id When car is present in database Then partial update")
+	void givenOneIdWhenCarIsPresentInDatabaseThenPartialUpdate() {
+		
+		CarEntity carEntity = new CarEntity();
+		carEntity.setLicense("1111-X");
+		CarEntity dbCarEntity = buildCarEntity(1L, "test-name", 1L, "test-model", "test-owner", "1111-T");
+		
+		when(carRepository.findById(any(Long.class))).thenReturn(Optional.of(dbCarEntity));
+		
+		CarEntity updatedCarEntity = carService.partialUpdateEntity(1L, carEntity);
+		
+		assertNotNull(updatedCarEntity);
+		assertEquals("test-name", updatedCarEntity.getBrand().getName());
+		assertEquals("test-model", updatedCarEntity.getModel());
+		assertEquals("test-owner", updatedCarEntity.getOwner());
+		assertEquals("1111-X", updatedCarEntity.getLicense());
+	}
+
+	@Test
+	@DisplayName("Given one id When car is NOT present in partial update Then throw error")
+	void givenOneIdWhenCarIsNotPresentInPartialUpdateThenThrowError() {
+		
+		CarEntity carEntity = new CarEntity();
+		carEntity.setLicense("1111-X");
+		
+		when(carRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+		
+		ApiException exception = assertThrows(ApiException.class, () -> carService.partialUpdateEntity(1L, carEntity));
 		
 		assertNotNull(exception);
 		assertEquals(HttpStatus.NOT_FOUND.value(), exception.getErrorCode());

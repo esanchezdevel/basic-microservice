@@ -45,5 +45,16 @@ public interface CarService {
 	 * @return The carEntity updated
 	 * @throws ApiException
 	 */
-	CarEntity update(Long id, CarEntity carEntity) throws ApiException;
+	CarEntity updateEntity(Long id, CarEntity carEntity) throws ApiException;
+	
+	/**
+	 * Update the partial entity in database.
+	 * If the entity is not present in database, an ApiException is thrown.
+	 * 
+	 * @param id CarEntity id
+	 * @param carEntity The entity to be persisted in database
+	 * @return The carEntity updated
+	 * @throws ApiException
+	 */
+	CarEntity partialUpdateEntity(Long id, CarEntity carEntity) throws ApiException;
 }

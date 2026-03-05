@@ -42,18 +42,21 @@ public class CarMapping implements Mapping<CarDTO, CarEntity> {
 	
 	public CarEntity parseToEntity(CarDTO dto) throws ApiException {
 		
-		Optional<BrandEntity> brand = brandRepository.findByName(dto.getBrand());
-		
-		if (brand.isEmpty())
-			throw new ApiException(HttpStatus.NOT_FOUND.value(), "Brand '" + dto.getBrand() + "' not found in database");
-		
 		CarEntity entity = new CarEntity();
 		
+		if (dto.getBrand() != null) {
+			Optional<BrandEntity> brand = brandRepository.findByName(dto.getBrand());
+			
+			if (brand.isEmpty())
+				throw new ApiException(HttpStatus.NOT_FOUND.value(), "Brand '" + dto.getBrand() + "' not found in database");
+			
+			entity.setBrand(brand.get());
+		}
+		
 		if (dto.getId() != null) entity.setId(Long.valueOf(dto.getId()));
-		entity.setBrand(brand.get());
-		entity.setModel(dto.getModel());
-		entity.setOwner(dto.getOwner());
-		entity.setLicense(dto.getLicense());
+		if (dto.getModel() != null) entity.setModel(dto.getModel());
+		if (dto.getOwner() != null) entity.setOwner(dto.getOwner());
+		if (dto.getLicense() != null) entity.setLicense(dto.getLicense());
 		
 		return entity;
 	}
