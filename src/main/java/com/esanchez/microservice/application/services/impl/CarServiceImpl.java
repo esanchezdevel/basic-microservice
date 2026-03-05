@@ -87,17 +87,19 @@ public class CarServiceImpl implements CarService {
 			if (dbCarEntity.isEmpty())
 				throw new ApiException(HttpStatus.NOT_FOUND.value(), "Car not found in database");
 		
-			dbCarEntity.get().setId(carEntity.getId());
-			dbCarEntity.get().setBrand(carEntity.getBrand());
-			dbCarEntity.get().setModel(carEntity.getModel());
-			dbCarEntity.get().setOwner(carEntity.getOwner());
-			dbCarEntity.get().setLicense(carEntity.getLicense());
+			CarEntity entity = dbCarEntity.get();
 			
-			return dbCarEntity.get();
-		} catch (ApiException e) {
-			throw e;
+			entity.setBrand(carEntity.getBrand());
+			entity.setModel(carEntity.getModel());
+			entity.setOwner(carEntity.getOwner());
+			entity.setLicense(carEntity.getLicense());
+			
+			return entity;
 		} catch (Exception e) {
 			logger.error("Unexpected error getting entity from database. {}", e.getMessage());
+			
+			if (e instanceof ApiException) throw e;
+			
 			throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
 		}
 	}
@@ -113,17 +115,19 @@ public class CarServiceImpl implements CarService {
 			if (dbCarEntity.isEmpty())
 				throw new ApiException(HttpStatus.NOT_FOUND.value(), "Car not found in database");
 		
-			if (carEntity.getId() != null && carEntity.getId() != 0L) dbCarEntity.get().setId(carEntity.getId());
-			if (carEntity.getBrand() != null) dbCarEntity.get().setBrand(carEntity.getBrand());
-			if (carEntity.getModel() != null) dbCarEntity.get().setModel(carEntity.getModel());
-			if (carEntity.getOwner() != null) dbCarEntity.get().setOwner(carEntity.getOwner());
-			if (carEntity.getLicense() != null) dbCarEntity.get().setLicense(carEntity.getLicense());
+			CarEntity entity = dbCarEntity.get();
 			
-			return dbCarEntity.get();
-		} catch (ApiException e) {
-			throw e;
+			if (carEntity.getBrand() != null) entity.setBrand(carEntity.getBrand());
+			if (carEntity.getModel() != null) entity.setModel(carEntity.getModel());
+			if (carEntity.getOwner() != null) entity.setOwner(carEntity.getOwner());
+			if (carEntity.getLicense() != null) entity.setLicense(carEntity.getLicense());
+			
+			return entity;
 		} catch (Exception e) {
 			logger.error("Unexpected error getting entity from database. {}", e.getMessage());
+			
+			if (e instanceof ApiException) throw e;
+			
 			throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
 		}
 	}
