@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -261,6 +263,33 @@ public class CarServiceTest {
 		assertNotNull(exception);
 		assertEquals(HttpStatus.NOT_FOUND.value(), exception.getErrorCode());
 		assertEquals("Car not found in database", exception.getMessage());
+	}
+	
+	/*
+	 * Tests deleteEntity method
+	 */
+	@Test
+	@DisplayName("Given one id When car is present in database Then delete")
+	void givenOneIdWhenCarIsPresentInDatabaseThenDelete() {
+		
+		doNothing().when(carRepository).deleteById(any(Long.class));
+		
+		carService.deleteEntity(1L);
+		
+		verify(carRepository, times(1)).deleteById(any(Long.class));
+	}
+
+	@Test
+	@DisplayName("Given one id When error happens Then throw error")
+	void givenOneIdWhenErrorHappensThenThrowError() {
+		
+		doThrow(new RuntimeException("Unexpected error")).when(carRepository).deleteById(any(Long.class));
+		
+		ApiException exception = assertThrows(ApiException.class, () -> carService.deleteEntity(1L));
+		
+		assertNotNull(exception);
+		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), exception.getErrorCode());
+		assertEquals("Unexpected error", exception.getMessage());
 	}
 	
 	private CarEntity buildCarEntity(long brandId, String brandName, long carId, String carModel, String carOwner, String carLicense) {

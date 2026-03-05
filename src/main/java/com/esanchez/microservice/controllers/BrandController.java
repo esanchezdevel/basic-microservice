@@ -44,7 +44,7 @@ public class BrandController {
 			logger.error("Error saving entity in database. {}", e.getMessage());
 			return ResponseEntity.status(e.getErrorCode()).body(new ResponseDTO.Builder()
 																			.responseCode(e.getErrorCode())
-																			.errorMessage(e.getMessage())
+																			.message(e.getMessage())
 																			.build());
 		}
 	}

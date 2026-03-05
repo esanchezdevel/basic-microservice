@@ -131,4 +131,16 @@ public class CarServiceImpl implements CarService {
 			throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
 		}
 	}
+	
+	@Override
+	public void deleteEntity(Long id) throws ApiException {
+		logger.info("Deleting car entity with id {}", id);
+		
+		try {
+			carRepository.deleteById(id);
+		} catch (Exception e) {
+			logger.error("Unexpected error deleting entity from database. {}", e.getMessage());
+			throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+		}
+	}
 }

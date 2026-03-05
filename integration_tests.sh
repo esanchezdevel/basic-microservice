@@ -82,5 +82,18 @@ curl "$BASE_URL/v1/api/cars/1" \
   -H "Authorization: Bearer $JWT" \
   -H "Accept: application/json"
   
+echo ""
+echo "Delete car"
+curl -vv -X DELETE "$BASE_URL/v1/api/cars/1" \
+  -H "Authorization: Bearer $JWT" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json"  
+
+echo ""
+echo "Check deleted entity"
+curl "$BASE_URL/v1/api/cars/1" \
+  -H "Authorization: Bearer $JWT" \
+  -H "Accept: application/json"
+
 echo
 echo "Integration tests finished..."

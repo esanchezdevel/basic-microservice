@@ -9,7 +9,7 @@ public class ResponseDTO {
 	private int responseCode;
 	
 	@JsonInclude(Include.NON_EMPTY)
-	private String errorMessage;
+	private String message;
 	
 	@JsonInclude(Include.NON_EMPTY)
 	private BaseDTO body;
@@ -19,7 +19,7 @@ public class ResponseDTO {
 	
 	public ResponseDTO(Builder builder) {
 		this.responseCode = builder.responseCode;
-		this.errorMessage = builder.errorMessage;
+		this.message = builder.message;
 		this.body = builder.body;
 	}
 
@@ -27,8 +27,8 @@ public class ResponseDTO {
 		return responseCode;
 	}
 
-	public String getErrorMessage() {
-		return errorMessage;
+	public String getMessage() {
+		return message;
 	}
 
 	public BaseDTO getBody() {
@@ -37,13 +37,13 @@ public class ResponseDTO {
 
 	@Override
 	public String toString() {
-		return "ResponseDTO [responseCode=" + responseCode + ", errorMessage=" + errorMessage + ", body=" + body + "]";
+		return "ResponseDTO [responseCode=" + responseCode + ", message=" + message + ", body=" + body + "]";
 	}
 	
 	public static class Builder {
 		private int responseCode;
 		
-		private String errorMessage;
+		private String message;
 		
 		private BaseDTO body;
 		
@@ -52,8 +52,8 @@ public class ResponseDTO {
 			return this;
 		}
 		
-		public Builder errorMessage(String errorMessage) {
-			this.errorMessage = errorMessage;
+		public Builder message(String message) {
+			this.message = message;
 			return this;
 		}
 		

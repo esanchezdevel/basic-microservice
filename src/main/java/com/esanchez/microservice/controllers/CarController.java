@@ -57,7 +57,7 @@ public class CarController {
 			logger.error("Error saving entity in database. {}", e.getMessage());
 			return ResponseEntity.status(e.getErrorCode()).body(new ResponseDTO.Builder()
 																			.responseCode(e.getErrorCode())
-																			.errorMessage(e.getMessage())
+																			.message(e.getMessage())
 																			.build());
 		}
 	}
@@ -86,7 +86,7 @@ public class CarController {
 			logger.error("Error getting entities from database. {}", e.getMessage());
 			return ResponseEntity.status(e.getErrorCode()).body(new ResponseDTO.Builder()
 																			.responseCode(e.getErrorCode())
-																			.errorMessage(e.getMessage())
+																			.message(e.getMessage())
 																			.build());
 		}
 	}
@@ -101,7 +101,7 @@ public class CarController {
 			if (carEntity.isEmpty()) {
 				ResponseDTO response = new ResponseDTO.Builder()
 													.responseCode(HttpStatus.NOT_FOUND.value())
-													.errorMessage("Car not found in databaes with id " + id)
+													.message("Car not found in database with id " + id)
 													.build();
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 			}
@@ -115,7 +115,7 @@ public class CarController {
 			logger.error("Error getting entity from database with id {}. {}", id, e.getMessage());
 			return ResponseEntity.status(e.getErrorCode()).body(new ResponseDTO.Builder()
 																			.responseCode(e.getErrorCode())
-																			.errorMessage(e.getMessage())
+																			.message(e.getMessage())
 																			.build());
 		}
 	}
@@ -134,7 +134,7 @@ public class CarController {
 			logger.error("Error updating CarEntity with id {}. {}", id, e.getMessage());
 			return ResponseEntity.status(e.getErrorCode()).body(new ResponseDTO.Builder()
 																			.responseCode(e.getErrorCode())
-																			.errorMessage(e.getMessage())
+																			.message(e.getMessage())
 																			.build());
 		}
 	}
@@ -153,15 +153,27 @@ public class CarController {
 			logger.error("Error in partial update of CarEntity with id {}. {}", id, e.getMessage());
 			return ResponseEntity.status(e.getErrorCode()).body(new ResponseDTO.Builder()
 																			.responseCode(e.getErrorCode())
-																			.errorMessage(e.getMessage())
+																			.message(e.getMessage())
 																			.build());
 		}
 	}
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> delete(@PathVariable Long id) {
+	public ResponseEntity<ResponseDTO> delete(@PathVariable Long id) {
 		logger.info("Request delete car. id: {}", id);
 		
-		return ResponseEntity.noContent().build();
+		try {
+			carService.deleteEntity(id);
+			return ResponseEntity.ok(new ResponseDTO.Builder()
+												.responseCode(HttpStatus.OK.value())
+												.message("Car succesfully deleted")
+												.build());
+		} catch (ApiException e) {
+			logger.error("Error in partial update of CarEntity with id {}. {}", id, e.getMessage());
+			return ResponseEntity.status(e.getErrorCode()).body(new ResponseDTO.Builder()
+																			.responseCode(e.getErrorCode())
+																			.message(e.getMessage())
+																			.build());
+		}
 	}
 }

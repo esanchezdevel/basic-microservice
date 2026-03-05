@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -102,7 +104,7 @@ public class CarControllerTest {
 		carDTO.setOwner("test-owner");
 		carDTO.setLicense("1111-T");
 		
-		ResponseDTO expectedResponse = new ResponseDTO.Builder().responseCode(HttpStatus.BAD_REQUEST.value()).errorMessage("Unexpected error").build();
+		ResponseDTO expectedResponse = new ResponseDTO.Builder().responseCode(HttpStatus.BAD_REQUEST.value()).message("Unexpected error").build();
 		
 		when(carMappingMock.parseToEntity(any(CarDTO.class))).thenReturn(carEntity);
 		when(carServiceMock.saveEntity(any(CarEntity.class))).thenThrow(new ApiException(HttpStatus.BAD_REQUEST.value(), "Unexpected error"));
@@ -211,7 +213,7 @@ public class CarControllerTest {
 		assertNotNull(result);
 		assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
 		assertNull(result.getBody().getBody());
-		assertEquals("Car not found in databaes with id 1", result.getBody().getErrorMessage());
+		assertEquals("Car not found in database with id 1", result.getBody().getMessage());
 	}
 	
 	@Test
@@ -225,7 +227,7 @@ public class CarControllerTest {
 		assertNotNull(result);
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
 		assertNull(result.getBody().getBody());
-		assertEquals("Unexpected error", result.getBody().getErrorMessage());
+		assertEquals("Unexpected error", result.getBody().getMessage());
 	}
 	
 	/**
@@ -265,7 +267,7 @@ public class CarControllerTest {
 		
 		assertNotNull(result);
 		assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
-		assertEquals("Car not found in database", result.getBody().getErrorMessage());
+		assertEquals("Car not found in database", result.getBody().getMessage());
 	}
 	
 	/**
@@ -311,7 +313,42 @@ public class CarControllerTest {
 		
 		assertNotNull(result);
 		assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
-		assertEquals("Car not found in database", result.getBody().getErrorMessage());
+		assertEquals("Car not found in database", result.getBody().getMessage());
+	}
+	
+	/**
+	 * Tests DELETE delete car
+	 */
+	@Test
+	@DisplayName("Given one car id When is present in database Then delete entity")
+	void givenOneCarIdWhenIsPresentInDbThenDeleteEntity() {
+		
+		CarDTO carDTO = new CarDTO();
+		carDTO.setLicense("1111-X");
+		
+		CarEntity carEntity = new CarEntity();
+		carEntity.setLicense("1111-X");
+		
+		doNothing().when(carServiceMock).deleteEntity(any(Long.class));
+		
+		ResponseEntity<ResponseDTO> result = carController.delete(1L);
+		
+		assertNotNull(result);
+		assertEquals(HttpStatus.OK, result.getStatusCode());
+		assertEquals("Car succesfully deleted", result.getBody().getMessage());
+	}
+	
+	@Test
+	@DisplayName("Given one car id When unexpected error happens Then return Error")
+	void givenOneCarIdWhenErrorHappensThenReturnError() {
+		
+		doThrow(new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Unexpected error")).when(carServiceMock).deleteEntity(any(Long.class));
+		
+		ResponseEntity<ResponseDTO> result = carController.delete(1L);
+		
+		assertNotNull(result);
+		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
+		assertEquals("Unexpected error", result.getBody().getMessage());
 	}
 	
 

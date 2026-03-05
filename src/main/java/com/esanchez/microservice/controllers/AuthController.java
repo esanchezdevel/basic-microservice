@@ -35,7 +35,7 @@ public class AuthController {
 		if (!jwtService.checkAccessUser(request.getUsername(), request.getPassword())) {
 			ResponseDTO response = new ResponseDTO.Builder()
 												.responseCode(HttpStatus.UNAUTHORIZED.value())
-												.errorMessage("Invalid User/Password.")
+												.message("Invalid User/Password.")
 												.build();
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 		}

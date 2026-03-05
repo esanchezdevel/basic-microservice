@@ -57,4 +57,12 @@ public interface CarService {
 	 * @throws ApiException
 	 */
 	CarEntity partialUpdateEntity(Long id, CarEntity carEntity) throws ApiException;
+	
+	/**
+	 * Delete one entity from database
+	 * 
+	 * @param id The identifier of the entity
+	 * @throws ApiException
+	 */
+	void deleteEntity(Long id) throws ApiException;
 }
