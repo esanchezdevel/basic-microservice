@@ -16,6 +16,7 @@ import com.esanchez.microservice.application.exceptions.ApiException;
 import com.esanchez.microservice.application.services.BrandService;
 import com.esanchez.microservice.domain.model.BrandEntity;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
@@ -35,6 +36,9 @@ public class BrandController {
 	}
 	
 	@PostMapping
+	@Operation(summary = "Create one Brand in database", 
+				description = "Create one Brand in database", 
+				tags = { "Brands" })
 	public ResponseEntity<ResponseDTO> create(@RequestBody BrandDTO brand) {
 		logger.info("Request create brand: {}", brand);
 		

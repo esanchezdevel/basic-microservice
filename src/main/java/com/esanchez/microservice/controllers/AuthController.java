@@ -18,6 +18,7 @@ import com.esanchez.microservice.application.security.JwtServiceImpl;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
 @RequestMapping("/v1/api/auth")
@@ -30,6 +31,9 @@ public class AuthController {
 	}
 
 	@PostMapping("/login")
+	@Operation(summary = "Generate a JWT to access to the API", 
+	description = "Generate a JWT to access to the API", 
+	tags = { "Auth" })
 	public ResponseEntity<ResponseDTO> login(@RequestBody LoginRequestDTO request) {
 
 		if (!jwtService.checkAccessUser(request.getUsername(), request.getPassword())) {

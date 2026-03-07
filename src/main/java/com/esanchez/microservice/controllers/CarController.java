@@ -27,6 +27,7 @@ import com.esanchez.microservice.application.exceptions.ApiException;
 import com.esanchez.microservice.application.services.CarService;
 import com.esanchez.microservice.domain.model.CarEntity;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 
@@ -47,6 +48,9 @@ public class CarController {
 	}
 	
 	@PostMapping
+	@Operation(summary = "Create one Car in database", 
+	description = "Create one Car in database", 
+	tags = { "Cars" })
 	public ResponseEntity<ResponseDTO> create(@RequestBody CarDTO car) {
 		logger.info("Request create car: {}", car);
 		
@@ -66,6 +70,9 @@ public class CarController {
 	}
 	
 	@GetMapping
+	@Operation(summary = "Get all Cars from database", 
+	description = "Get all Cars from database using pagination", 
+	tags = { "Cars" })
 	public ResponseEntity<ResponseDTO> readAll(
 			@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int size) {
@@ -95,6 +102,9 @@ public class CarController {
 	}
 	
 	@GetMapping("/{id}")
+	@Operation(summary = "Get one Car from database", 
+	description = "Get one Car from database", 
+	tags = { "Cars" })
 	public ResponseEntity<ResponseDTO> read(@PathVariable Long id) {
 		logger.info("Request read car with id {}", id);
 		
@@ -124,6 +134,9 @@ public class CarController {
 	}
 	
 	@PutMapping("/{id}")
+	@Operation(summary = "Update one Car in database", 
+	description = "Update one Car in database", 
+	tags = { "Cars" })
 	public ResponseEntity<ResponseDTO> update(@PathVariable Long id, @RequestBody CarDTO car) {
 		logger.info("Request update car. id: {}, car: {}", id, car);
 		
@@ -143,6 +156,9 @@ public class CarController {
 	}
 
 	@PatchMapping("/{id}")
+	@Operation(summary = "Partial update of one Car in database", 
+	description = "Partial update of one Car in database", 
+	tags = { "Cars" })
 	public ResponseEntity<ResponseDTO> partialUpdate(@PathVariable Long id, @RequestBody CarDTO car) {
 		logger.info("Request partial update car. id: {}, car: {}", id, car);
 		
@@ -162,6 +178,9 @@ public class CarController {
 	}
 	
 	@DeleteMapping("/{id}")
+	@Operation(summary = "Delete one Car from database", 
+	description = "Delete one Car from database", 
+	tags = { "Cars" })
 	public ResponseEntity<ResponseDTO> delete(@PathVariable Long id) {
 		logger.info("Request delete car. id: {}", id);
 		
