@@ -1,13 +1,14 @@
 #!/bin/bash
 
 BASE_URL="http://localhost:8080"
+AUTH_URL="http://localhost:8081"
 
 USERNAME="user"
 PASSWORD="qwertyui"
 
 echo "Requesting JWT..."
 
-LOGIN_RESPONSE=$(curl -s -X POST "$BASE_URL/v1/api/auth/login" \
+LOGIN_RESPONSE=$(curl -s -X POST "$AUTH_URL/v1/api/auth/login" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   --data "{\"username\":\"$USERNAME\",\"password\":\"$PASSWORD\"}")
