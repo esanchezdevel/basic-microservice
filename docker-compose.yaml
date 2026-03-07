@@ -1,0 +1,28 @@
+services:
+  basic-microservice:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: basic-microservice
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - test-microservices-network
+
+  auth-microservice:
+    build:
+      context: ../auth-microservice
+      dockerfile: Dockerfile
+    container_name: auth-microservice
+    ports:
+      - "8081:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - test-microservices-network
+
+networks:
+  test-microservices-network:
+    driver: bridge
