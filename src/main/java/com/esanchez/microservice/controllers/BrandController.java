@@ -16,8 +16,11 @@ import com.esanchez.microservice.application.exceptions.ApiException;
 import com.esanchez.microservice.application.services.BrandService;
 import com.esanchez.microservice.domain.model.BrandEntity;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 @RestController
 @RequestMapping("/v1/api/brands")
+@SecurityRequirement(name = "bearerAuth") 
 public class BrandController {
 
 	private static final Logger logger = LogManager.getLogger(BrandController.class);

@@ -27,9 +27,12 @@ import com.esanchez.microservice.application.exceptions.ApiException;
 import com.esanchez.microservice.application.services.CarService;
 import com.esanchez.microservice.domain.model.CarEntity;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 
 @RestController
 @RequestMapping("/v1/api/cars")
+@SecurityRequirement(name = "bearerAuth")
 public class CarController {
 
 	private static final Logger logger = LogManager.getLogger(CarController.class);
