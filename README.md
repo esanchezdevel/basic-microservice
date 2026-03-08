@@ -9,3 +9,16 @@ Build docker image
 Run docker image
 
 `docker run --name basic-microservice -d -p 8080:8080 basic-microservice:latest`
+
+# Full Microservices system
+
+## How to build
+
+Start with docker compose:
+
+`docker compose up --build -d`
+
+Stop and clean with docker compose:
+
+`docker compose down`
+
