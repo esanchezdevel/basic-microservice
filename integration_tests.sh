@@ -38,7 +38,7 @@ curl -vv -X POST "$BASE_URL/v1/api/cars" \
   -H "Authorization: Bearer $JWT" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
-  --data '{"brand": "Renault", "model": "laguna", "owner": "test-owner", "license": "1111-T"}'
+  --data '{"brand": "Renault", "model": "laguna"}'
   
 echo ""
 echo "Get cars"

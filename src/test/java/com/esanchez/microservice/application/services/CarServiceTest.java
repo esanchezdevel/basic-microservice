@@ -11,11 +11,11 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 
 import com.esanchez.microservice.application.exceptions.ApiException;
+import com.esanchez.microservice.application.port.CarProducer;
 import com.esanchez.microservice.application.services.impl.CarServiceImpl;
 import com.esanchez.microservice.domain.model.BrandEntity;
 import com.esanchez.microservice.domain.model.CarEntity;
@@ -38,6 +39,7 @@ import com.esanchez.microservice.domain.repositories.CarRepository;
 public class CarServiceTest {
 
 	@Mock private CarRepository carRepository;
+	@Mock private CarProducer<String, String> carProducer;
 	
 	@InjectMocks
 	private CarServiceImpl carService;
@@ -59,6 +61,7 @@ public class CarServiceTest {
 		entity.setLicense("1111-T");
 		
 		when(carRepository.save(any(CarEntity.class))).thenReturn(entity);
+		doNothing().when(carProducer).produce(anyString(), anyString());
 		
 		CarEntity result = carService.saveEntity(entity);
 		
@@ -82,7 +85,7 @@ public class CarServiceTest {
 		entity.setOwner("test-owner");
 		entity.setLicense("1111-T");
 		
-		ApiException exception = Assertions.assertThrows(ApiException.class, () -> carService.saveEntity(entity));
+		ApiException exception = assertThrows(ApiException.class, () -> carService.saveEntity(entity));
 		
 		assertNotNull(exception);
 		assertEquals(HttpStatus.BAD_REQUEST.value(), exception.getErrorCode());

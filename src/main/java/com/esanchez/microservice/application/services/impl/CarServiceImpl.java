@@ -10,10 +10,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.esanchez.microservice.application.event.CarCreationEvent;
 import com.esanchez.microservice.application.exceptions.ApiException;
+import com.esanchez.microservice.application.port.CarProducer;
 import com.esanchez.microservice.application.services.CarService;
 import com.esanchez.microservice.domain.model.CarEntity;
 import com.esanchez.microservice.domain.repositories.CarRepository;
+
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectWriter;
 
 @Service
 public class CarServiceImpl implements CarService {
@@ -22,8 +27,11 @@ public class CarServiceImpl implements CarService {
 	
 	private final CarRepository carRepository;
 	
-	public CarServiceImpl(CarRepository carRepository) {
+	private final CarProducer<String, String> carProducer;
+	
+	public CarServiceImpl(CarRepository carRepository, CarProducer<String, String> carProducer) {
 		this.carRepository = carRepository;
+		this.carProducer = carProducer;
 	}
 	
 	@Override
@@ -33,7 +41,18 @@ public class CarServiceImpl implements CarService {
 		validateEntity(entity);
 
 		try {
-			return carRepository.save(entity);
+			CarEntity savedEntity = carRepository.save(entity);
+			
+			CarCreationEvent carCreationEvent = new CarCreationEvent.Builder()
+											.id(savedEntity.getId())
+											.brand(savedEntity.getBrand().getName())
+											.model(savedEntity.getModel())
+											.build();
+			
+			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+			carProducer.produce("cars-created", ow.writeValueAsString(carCreationEvent));
+			
+			return savedEntity;
 		} catch (Exception e) {
 			logger.error("Unexpected error saving entity: {}. {}", entity, e.getMessage());
 			throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Unexpected error saving entity: " + entity + ". " + e.getMessage());
@@ -47,10 +66,6 @@ public class CarServiceImpl implements CarService {
 			throw new ApiException(HttpStatus.BAD_REQUEST.value(), "Invalid car entity. Brand is empty");
 		if (entity.getModel() == null || entity.getModel().length() == 0) 
 			throw new ApiException(HttpStatus.BAD_REQUEST.value(), "Invalid car entity. Model is empty");
-		if (entity.getOwner() == null || entity.getOwner().length() == 0) 
-			throw new ApiException(HttpStatus.BAD_REQUEST.value(), "Invalid car entity. Owner is empty");
-		if (entity.getLicense() == null || entity.getLicense().length() == 0) 
-			throw new ApiException(HttpStatus.BAD_REQUEST.value(), "Invalid car entity. License is empty");
 	}
 	
 	@Override
